@@ -1,0 +1,8 @@
+{
+	"name": "libuv",
+	"description": "Deimos bindings for libuv, a cross-platform asynchronous I/O library",
+	"homepage": "http://libuv.org/",
+	"importPaths": ["."],
+	"targetType": "sourceLibrary",
+	"libs-posix" : ["uv"]
+}
