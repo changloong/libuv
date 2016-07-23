@@ -1,7 +1,8 @@
 module deimos.libuv.uv_sunos;
-import deimos.libuv.d;
+import deimos.libuv._d;
 version(Solaris):
-extern(C) : 
+extern(C) :
+nothrow:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,18 +24,18 @@ extern(C) :
  * IN THE SOFTWARE.
  */
 /* UV_SUNOS_H */
-/* include(sys/port.h); */  
-/* include(port.h); */  
+/* include(sys/port.h); */
+/* include(port.h); */
 /* For the sake of convenience and reduced #ifdef-ery in src/unix/sunos.c,
  * add the fs_event fields even when this version of SunOS doesn't support
  * file watching.
  */
-template UV_PLATFORM_LOOP_FIELDS() {  
-	uv__io_t fs_event_watcher;  
-	int fs_fd;  
+template UV_PLATFORM_LOOP_FIELDS() {
+	uv__io_t fs_event_watcher;
+	int fs_fd;
 }
-template UV_PLATFORM_FS_EVENT_FIELDS() {  
-	file_obj_t fo;  
-	int fd;  
+template UV_PLATFORM_FS_EVENT_FIELDS() {
+	file_obj_t fo;
+	int fd;
 }
 /* defined(PORT_SOURCE_FILE) */

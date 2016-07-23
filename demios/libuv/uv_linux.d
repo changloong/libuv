@@ -1,7 +1,8 @@
 module deimos.libuv.uv_linux;
-import deimos.libuv.d;
+import deimos.libuv._d;
 version(linux):
-extern(C) : 
+extern(C) :
+nothrow:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,12 +24,12 @@ extern(C) :
  * IN THE SOFTWARE.
  */
 /* UV_LINUX_H */
-template UV_PLATFORM_LOOP_FIELDS() {  
-	uv__io_t inotify_read_watcher;  
-	void* inotify_watchers;  
-	int inotify_fd;  
+template UV_PLATFORM_LOOP_FIELDS() {
+	uv__io_t inotify_read_watcher;
+	void* inotify_watchers;
+	int inotify_fd;
 }
-template UV_PLATFORM_FS_EVENT_FIELDS() {  
-	void*[2] watchers;  
-	int wd;  
+template UV_PLATFORM_FS_EVENT_FIELDS() {
+	void*[2] watchers;
+	int wd;
 }

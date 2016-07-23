@@ -1,7 +1,8 @@
 module deimos.libuv.pthread_barrier;
-import deimos.libuv.d;
+import deimos.libuv._d;
 static if( isAndroidOS || isMacOS ) :
-extern(C) : 
+extern(C) :
+nothrow:
 /*
 Copyright (c) 2016, Kari Tristan Helgason <kthelgason@gmail.com>
 
@@ -18,11 +19,11 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 /* _UV_PTHREAD_BARRIER_ */
-/* include(errno.h); */  
-/* include(pthread.h); */  
-/* include(semaphore.h); */  
+/* include(errno.h); */
+/* include(pthread.h); */
+/* include(semaphore.h); */
 /* sem_t */
-enum PTHREAD_BARRIER_SERIAL_THREAD = 0x12345 ;  
+enum PTHREAD_BARRIER_SERIAL_THREAD = 0x12345 ;
 /*
  * To maintain ABI compatibility with
  * libuv v1.x struct is padded according
@@ -33,17 +34,17 @@ static if( isAndroidOS ) {
 } else static if( isMacOS ) {
 	enum UV_BARRIER_STRUCT_PADDING = pthread_mutex_t.sizeof + 2 * sem_t.sizeof + 2 * uint.sizeof - ptrdiff_t.sizeof;
 }
-struct _uv_barrier {  
-	pthread_mutex_t mutex;  
-	pthread_cond_t cond;  
-	uint threshold;  
-	uint in_;  
-	uint out_;  
+struct _uv_barrier {
+	pthread_mutex_t mutex;
+	pthread_cond_t cond;
+	uint threshold;
+	uint in_;
+	uint out_;
 };
-struct pthread_barrier_t {  
-	_uv_barrier* b;  
-	char[UV_BARRIER_STRUCT_PADDING] _pad;  
+struct pthread_barrier_t {
+	_uv_barrier* b;
+	char[UV_BARRIER_STRUCT_PADDING] _pad;
 };
-int pthread_barrier_init(pthread_barrier_t* barrier, const(void)* barrier_attr, uint count);  
-int pthread_barrier_wait(pthread_barrier_t* barrier);  
-int pthread_barrier_destroy(pthread_barrier_t* barrier);  
+int pthread_barrier_init(pthread_barrier_t* barrier, const(void)* barrier_attr, uint count);
+int pthread_barrier_wait(pthread_barrier_t* barrier);
+int pthread_barrier_destroy(pthread_barrier_t* barrier);

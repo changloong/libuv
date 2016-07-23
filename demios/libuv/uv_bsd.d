@@ -1,7 +1,8 @@
 module deimos.libuv.uv_bsd;
-import deimos.libuv.d;
+import deimos.libuv._d;
 version(FreeBSD):
-extern(C) : 
+extern(C) :
+nothrow:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,11 +24,11 @@ extern(C) :
  * IN THE SOFTWARE.
  */
 /* UV_BSD_H */
-template UV_PLATFORM_FS_EVENT_FIELDS() {  
-	uv__io_t event_watcher;  
+template UV_PLATFORM_FS_EVENT_FIELDS() {
+	uv__io_t event_watcher;
 }
-template UV_IO_PRIVATE_PLATFORM_FIELDS() {  
-	int rcount;  
-	int wcount;  
+template UV_IO_PRIVATE_PLATFORM_FIELDS() {
+	int rcount;
+	int wcount;
 }
-enum UV_HAVE_KQUEUE = 1 ;  
+enum UV_HAVE_KQUEUE = 1 ;

@@ -1,6 +1,7 @@
 module deimos.libuv.uv_threadpool;
-import deimos.libuv.d;
-extern(C) : 
+import deimos.libuv._d;
+extern(C) :
+nothrow:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,9 +27,9 @@ extern(C) :
  * Windows and Unix backends.
  */
 /* UV_THREADPOOL_H_ */
-struct uv__work {  
-	void function(uv__work* w) work;  
-	void function(uv__work* w, int status) done;  
-	uv_loop_s* loop;  
-	void*[2] wq;  
+struct uv__work {
+	void function(uv__work* w) work;
+	void function(uv__work* w, int status) done;
+	uv_loop_s* loop;
+	void*[2] wq;
 };

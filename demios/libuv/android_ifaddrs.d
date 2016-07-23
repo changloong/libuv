@@ -1,7 +1,8 @@
 module deimos.libuv.android_ifaddrs;
-import deimos.libuv.d;
+import deimos.libuv._d;
 version(Android):
-extern(C) : 
+extern(C) :
+nothrow:
 /*
  * Copyright (c) 1995, 1999
  *	Berkeley Software Design, Inc.  All rights reserved.
@@ -26,20 +27,20 @@ extern(C) :
  *
  *	BSDI ifaddrs.h,v 2.5 2000/02/23 14:51:59 dab Exp
  */
-struct ifaddrs {  
-	ifaddrs* ifa_next;  
-	char* ifa_name;  
-	uint ifa_flags;  
-	sockaddr* ifa_addr;  
-	sockaddr* ifa_netmask;  
-	sockaddr* ifa_dstaddr;  
-	void* ifa_data;  
+struct ifaddrs {
+	ifaddrs* ifa_next;
+	char* ifa_name;
+	uint ifa_flags;
+	sockaddr* ifa_addr;
+	sockaddr* ifa_netmask;
+	sockaddr* ifa_dstaddr;
+	void* ifa_data;
 };
 /*
  * This may have been defined in <net/if.h>.  Note that if <net/if.h> is
  * to be included it must be included before this header file.
  */
-alias ifa_broadaddr = ifa_dstaddr ;  
-/* include(sys/cdefs.h); */  
-int getifaddrs(ifaddrs** ifap);  
-void freeifaddrs(ifaddrs* ifa);  
+alias ifa_broadaddr = ifa_dstaddr ;
+/* include(sys/cdefs.h); */
+int getifaddrs(ifaddrs** ifap);
+void freeifaddrs(ifaddrs* ifa);

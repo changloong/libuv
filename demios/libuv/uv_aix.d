@@ -1,7 +1,8 @@
 module deimos.libuv.uv_aix;
-import deimos.libuv.d;
+import deimos.libuv._d;
 version(AIX):
-extern(C) : 
+extern(C) :
+nothrow:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,10 +24,10 @@ extern(C) :
  * IN THE SOFTWARE.
  */
 /* UV_AIX_H */
-template UV_PLATFORM_LOOP_FIELDS() {  
-	int fs_fd;  
+template UV_PLATFORM_LOOP_FIELDS() {
+	int fs_fd;
 }
-template UV_PLATFORM_FS_EVENT_FIELDS() {  
-	uv__io_t event_watcher;  
-	char* dir_filename;  
+template UV_PLATFORM_FS_EVENT_FIELDS() {
+	uv__io_t event_watcher;
+	char* dir_filename;
 }

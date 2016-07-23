@@ -1,6 +1,7 @@
 module deimos.libuv.uv_errno;
-import deimos.libuv.d;
-extern(C) : 
+import deimos.libuv._d;
+extern(C) :
+nothrow:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,7 +23,7 @@ extern(C) :
  * IN THE SOFTWARE.
  */
 /* UV_ERRNO_H_ */
-/* include(errno.h); */  
+/* include(errno.h); */
 enum UV__EOF = -4095;
 enum UV__UNKNOWN = -4094;
 enum UV__EAI_ADDRFAMILY = -3000;
