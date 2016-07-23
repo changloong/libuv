@@ -75,17 +75,15 @@ enum isDtUnknow = true ;
 enum isGnuC	= false ;
 enum isEHOSTDOWN = false ;
 
-struct RB_ENTRY(T){ 
+struct RB_ENTRY(T) { 
 	T*	rbe_left;
 	T*	rbe_right;
 	T*	rbe_parent;
 	int rbe_color; 
 }
 
-template RB_HEAD(name, type) {
-	struct name {
-		type* rbh_root;
-	};
+struct RB_HEAD(T) {
+	T* rbh_root;
 }
 
 template ExternC(T) if (is(typeof(*(T.init)) P == function)) {

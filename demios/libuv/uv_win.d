@@ -185,7 +185,7 @@ alias UV__DT_SOCKET = UV_DIRENT_SOCKET ;
 alias UV__DT_CHAR = UV_DIRENT_CHAR ;
 /* Platform-specific definitions for uv_dlopen support. */
 alias UV__DT_BLOCK = UV_DIRENT_BLOCK ;
-mixin RB_HEAD!(uv_timer_tree_s, uv_timer_s);
+alias uv_timer_tree_s = RB_HEAD!(uv_timer_s);
 struct uv_lib_t {
 	HMODULE handle;
 	char* errmsg;
@@ -258,7 +258,7 @@ template UV_PRIVATE_REQ_TYPES() {
 	struct uv_tcp_accept_s {
 		mixin UV_REQ_FIELDS;
 		SOCKET accept_socket;
-		char[sizeof(structsockaddr_storage)*2+32] accept_buffer;
+		char[sockaddr_storage.sizeof*2+32] accept_buffer;
 		HANDLE event_handle;
 		HANDLE wait_handle;
 		uv_tcp_accept_s* next_pending;
