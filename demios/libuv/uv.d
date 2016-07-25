@@ -1,7 +1,9 @@
 module deimos.libuv.uv;
 import deimos.libuv._d;
 extern(C) :
+pure:
 nothrow:
+@nogc:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -219,19 +221,19 @@ uv_loop_t* uv_loop_new();
  */
 void uv_loop_delete(uv_loop_t*);
 size_t uv_loop_size();
-int uv_loop_alive(const(uv_loop_t)* loop);
+int uv_loop_alive(inout(uv_loop_t)* loop);
 int uv_loop_configure(uv_loop_t* loop, uv_loop_option option, ...);
 int uv_run(uv_loop_t*, uv_run_mode mode);
 void uv_stop(uv_loop_t*);
 void uv_ref(uv_handle_t*);
 void uv_unref(uv_handle_t*);
-int uv_has_ref(const(uv_handle_t)*);
+int uv_has_ref(inout(uv_handle_t)*);
 void uv_update_time(uv_loop_t*);
-uint64_t uv_now(const(uv_loop_t)*);
-int uv_backend_fd(const(uv_loop_t)*);
-int uv_backend_timeout(const(uv_loop_t)*);
+uint64_t uv_now(inout(uv_loop_t)*);
+int uv_backend_fd(inout(uv_loop_t)*);
+int uv_backend_timeout(inout(uv_loop_t)*);
 alias uv_alloc_cb = ExternC!(void function(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf));
-alias uv_read_cb = ExternC!(void function(uv_stream_t* stream, ssize_t nread, const(uv_buf_t)* buf));
+alias uv_read_cb = ExternC!(void function(uv_stream_t* stream, ssize_t nread, inout(uv_buf_t)* buf));
 alias uv_write_cb = ExternC!(void function(uv_write_t* req, int status));
 alias uv_connect_cb = ExternC!(void function(uv_connect_t* req, int status));
 alias uv_shutdown_cb = ExternC!(void function(uv_shutdown_t* req, int status));
@@ -249,7 +251,7 @@ alias uv_fs_cb = ExternC!(void function(uv_fs_t* req));
 alias uv_work_cb = ExternC!(void function(uv_work_t* req));
 alias uv_after_work_cb = ExternC!(void function(uv_work_t* req, int status));
 alias uv_getaddrinfo_cb = ExternC!(void function(uv_getaddrinfo_t* req, int status, addrinfo* res));
-alias uv_getnameinfo_cb = ExternC!(void function(uv_getnameinfo_t* req, int status, const(char)* hostname, const(char)* service));
+alias uv_getnameinfo_cb = ExternC!(void function(uv_getnameinfo_t* req, int status, inout(char)* hostname, inout(char)* service));
 struct uv_timespec_t {
 	ptrdiff_t tv_sec;
 	ptrdiff_t tv_nsec;
@@ -272,8 +274,8 @@ struct uv_stat_t {
 	uv_timespec_t st_ctim;
 	uv_timespec_t st_birthtim;
 };
-alias uv_fs_event_cb = ExternC!(void function(uv_fs_event_t* handle, const(char)* filename, int events, int status));
-alias uv_fs_poll_cb = ExternC!(void function(uv_fs_poll_t* handle, int status, const(uv_stat_t)* prev, const(uv_stat_t)* curr));
+alias uv_fs_event_cb = ExternC!(void function(uv_fs_event_t* handle, inout(char)* filename, int events, int status));
+alias uv_fs_poll_cb = ExternC!(void function(uv_fs_poll_t* handle, int status, inout(uv_stat_t)* prev, inout(uv_stat_t)* curr));
 alias uv_signal_cb = ExternC!(void function(uv_signal_t* handle, int signum));
 enum uv_membership {
 	UV_LEAVE_GROUP = 0 ,
@@ -324,7 +326,7 @@ struct uv_handle_s {
 };
 size_t uv_handle_size(uv_handle_type type);
 size_t uv_req_size(uv_req_type type);
-int uv_is_active(const(uv_handle_t)* handle);
+int uv_is_active(inout(uv_handle_t)* handle);
 void uv_walk(uv_loop_t* loop, uv_walk_cb walk_cb, void* arg);
 /* Helpers for ad hoc debugging, no API/ABI stability guaranteed. */
 void uv_print_all_handles(uv_loop_t* loop, FILE* stream);
@@ -332,7 +334,7 @@ void uv_print_active_handles(uv_loop_t* loop, FILE* stream);
 void uv_close(uv_handle_t* handle, uv_close_cb close_cb);
 int uv_send_buffer_size(uv_handle_t* handle, int* value);
 int uv_recv_buffer_size(uv_handle_t* handle, int* value);
-int uv_fileno(const(uv_handle_t)* handle, uv_os_fd_t* fd);
+int uv_fileno(inout(uv_handle_t)* handle, uv_os_fd_t* fd);
 uv_buf_t uv_buf_init(char* base, uint len);
 template UV_STREAM_FIELDS() {
 	size_t write_queue_size;
@@ -356,9 +358,9 @@ int uv_listen(uv_stream_t* stream, int backlog, uv_connection_cb cb);
 int uv_accept(uv_stream_t* server, uv_stream_t* client);
 int uv_read_start(uv_stream_t*, uv_alloc_cb alloc_cb, uv_read_cb read_cb);
 int uv_read_stop(uv_stream_t*);
-int uv_write(uv_write_t* req, uv_stream_t* handle, const(uv_buf_t)[] bufs, uint nbufs, uv_write_cb cb);
-int uv_write2(uv_write_t* req, uv_stream_t* handle, const(uv_buf_t)[] bufs, uint nbufs, uv_stream_t* send_handle, uv_write_cb cb);
-int uv_try_write(uv_stream_t* handle, const(uv_buf_t)[] bufs, uint nbufs);
+int uv_write(uv_write_t* req, uv_stream_t* handle, inout(uv_buf_t)* bufs, uint nbufs, uv_write_cb cb);
+int uv_write2(uv_write_t* req, uv_stream_t* handle, inout(uv_buf_t)* bufs, uint nbufs, uv_stream_t* send_handle, uv_write_cb cb);
+int uv_try_write(uv_stream_t* handle, inout(uv_buf_t)* bufs, uint nbufs);
 /* uv_write_t is a subclass of uv_req_t. */
 struct uv_write_s {
 	mixin UV_REQ_FIELDS;
@@ -367,10 +369,10 @@ struct uv_write_s {
 	uv_stream_t* handle;
 	mixin UV_WRITE_PRIVATE_FIELDS;
 };
-int uv_is_readable(const(uv_stream_t)* handle);
-int uv_is_writable(const(uv_stream_t)* handle);
+int uv_is_readable(inout(uv_stream_t)* handle);
+int uv_is_writable(inout(uv_stream_t)* handle);
 int uv_stream_set_blocking(uv_stream_t* handle, int blocking);
-int uv_is_closing(const(uv_handle_t)* handle);
+int uv_is_closing(inout(uv_handle_t)* handle);
 /*
  * uv_tcp_t is a subclass of uv_stream_t.
  *
@@ -391,10 +393,10 @@ enum uv_tcp_flags {
 	/* Used with uv_tcp_bind, when an IPv6 address is used. */
 	UV_TCP_IPV6ONLY = 1 
 };
-int uv_tcp_bind(uv_tcp_t* handle, const(sockaddr)* addr, uint flags);
-int uv_tcp_getsockname(const(uv_tcp_t)* handle, sockaddr* name, int* namelen);
-int uv_tcp_getpeername(const(uv_tcp_t)* handle, sockaddr* name, int* namelen);
-int uv_tcp_connect(uv_connect_t* req, uv_tcp_t* handle, const(sockaddr)* addr, uv_connect_cb cb);
+int uv_tcp_bind(uv_tcp_t* handle, inout(sockaddr)* addr, uint flags);
+int uv_tcp_getsockname(inout(uv_tcp_t)* handle, sockaddr* name, int* namelen);
+int uv_tcp_getpeername(inout(uv_tcp_t)* handle, sockaddr* name, int* namelen);
+int uv_tcp_connect(uv_connect_t* req, uv_tcp_t* handle, inout(sockaddr)* addr, uv_connect_cb cb);
 /* uv_connect_t is a subclass of uv_req_t. */
 struct uv_connect_s {
 	mixin UV_REQ_FIELDS;
@@ -424,7 +426,7 @@ enum uv_udp_flags {
 	UV_UDP_REUSEADDR = 4 
 };
 alias uv_udp_send_cb = ExternC!(void function(uv_udp_send_t* req, int status));
-alias uv_udp_recv_cb = ExternC!(void function(uv_udp_t* handle, ssize_t nread, const(uv_buf_t)* buf, const(sockaddr)* addr, uint flags));
+alias uv_udp_recv_cb = ExternC!(void function(uv_udp_t* handle, ssize_t nread, inout(uv_buf_t)* buf, inout(sockaddr)* addr, uint flags));
 /* uv_udp_t is a subclass of uv_handle_t. */
 struct uv_udp_s {
 	mixin UV_HANDLE_FIELDS;
@@ -450,16 +452,16 @@ struct uv_udp_send_s {
 int uv_udp_init(uv_loop_t*, uv_udp_t* handle);
 int uv_udp_init_ex(uv_loop_t*, uv_udp_t* handle, uint flags);
 int uv_udp_open(uv_udp_t* handle, uv_os_sock_t sock);
-int uv_udp_bind(uv_udp_t* handle, const(sockaddr)* addr, uint flags);
-int uv_udp_getsockname(const(uv_udp_t)* handle, sockaddr* name, int* namelen);
-int uv_udp_set_membership(uv_udp_t* handle, const(char)* multicast_addr, const(char)* interface_addr, uv_membership membership);
+int uv_udp_bind(uv_udp_t* handle, inout(sockaddr)* addr, uint flags);
+int uv_udp_getsockname(inout(uv_udp_t)* handle, sockaddr* name, int* namelen);
+int uv_udp_set_membership(uv_udp_t* handle, inout(char)* multicast_addr, inout(char)* interface_addr, uv_membership membership);
 int uv_udp_set_multicast_loop(uv_udp_t* handle, int on);
 int uv_udp_set_multicast_ttl(uv_udp_t* handle, int ttl);
-int uv_udp_set_multicast_interface(uv_udp_t* handle, const(char)* interface_addr);
+int uv_udp_set_multicast_interface(uv_udp_t* handle, inout(char)* interface_addr);
 int uv_udp_set_broadcast(uv_udp_t* handle, int on);
 int uv_udp_set_ttl(uv_udp_t* handle, int ttl);
-int uv_udp_send(uv_udp_send_t* req, uv_udp_t* handle, const(uv_buf_t)[] bufs, uint nbufs, const(sockaddr)* addr, uv_udp_send_cb send_cb);
-int uv_udp_try_send(uv_udp_t* handle, const(uv_buf_t)[] bufs, uint nbufs, const(sockaddr)* addr);
+int uv_udp_send(uv_udp_send_t* req, uv_udp_t* handle, inout(uv_buf_t)* bufs, uint nbufs, inout(sockaddr)* addr, uv_udp_send_cb send_cb);
+int uv_udp_try_send(uv_udp_t* handle, inout(uv_buf_t)* bufs, uint nbufs, inout(sockaddr)* addr);
 int uv_udp_recv_start(uv_udp_t* handle, uv_alloc_cb alloc_cb, uv_udp_recv_cb recv_cb);
 int uv_udp_recv_stop(uv_udp_t* handle);
 /*
@@ -500,10 +502,10 @@ struct uv_pipe_s {
 };
 int uv_pipe_init(uv_loop_t*, uv_pipe_t* handle, int ipc);
 int uv_pipe_open(uv_pipe_t*, uv_file file);
-int uv_pipe_bind(uv_pipe_t* handle, const(char)* name);
-void uv_pipe_connect(uv_connect_t* req, uv_pipe_t* handle, const(char)* name, uv_connect_cb cb);
-int uv_pipe_getsockname(const(uv_pipe_t)* handle, char* buffer, size_t* size);
-int uv_pipe_getpeername(const(uv_pipe_t)* handle, char* buffer, size_t* size);
+int uv_pipe_bind(uv_pipe_t* handle, inout(char)* name);
+void uv_pipe_connect(uv_connect_t* req, uv_pipe_t* handle, inout(char)* name, uv_connect_cb cb);
+int uv_pipe_getsockname(inout(uv_pipe_t)* handle, char* buffer, size_t* size);
+int uv_pipe_getpeername(inout(uv_pipe_t)* handle, char* buffer, size_t* size);
 void uv_pipe_pending_instances(uv_pipe_t* handle, int count);
 int uv_pipe_pending_count(uv_pipe_t* handle);
 uv_handle_type uv_pipe_pending_type(uv_pipe_t* handle);
@@ -562,7 +564,7 @@ int uv_timer_start(uv_timer_t* handle, uv_timer_cb cb, uint64_t timeout, uint64_
 int uv_timer_stop(uv_timer_t* handle);
 int uv_timer_again(uv_timer_t* handle);
 void uv_timer_set_repeat(uv_timer_t* handle, uint64_t repeat);
-uint64_t uv_timer_get_repeat(const(uv_timer_t)* handle);
+uint64_t uv_timer_get_repeat(inout(uv_timer_t)* handle);
 /*
  * uv_getaddrinfo_t is a subclass of uv_req_t.
  *
@@ -575,7 +577,7 @@ struct uv_getaddrinfo_s {
 	/* struct addrinfo* addrinfo is marked as private, but it really isn't. */
 	mixin UV_GETADDRINFO_PRIVATE_FIELDS;
 };
-int uv_getaddrinfo(uv_loop_t* loop, uv_getaddrinfo_t* req, uv_getaddrinfo_cb getaddrinfo_cb, const(char)* node, const(char)* service, const(addrinfo)* hints);
+int uv_getaddrinfo(uv_loop_t* loop, uv_getaddrinfo_t* req, uv_getaddrinfo_cb getaddrinfo_cb, inout(char)* node, inout(char)* service, inout(addrinfo)* hints);
 void uv_freeaddrinfo(addrinfo* ai);
 /*
 * uv_getnameinfo_t is a subclass of uv_req_t.
@@ -589,7 +591,7 @@ struct uv_getnameinfo_s {
 	/* host and service are marked as private, but they really aren't. */
 	mixin UV_GETNAMEINFO_PRIVATE_FIELDS;
 };
-int uv_getnameinfo(uv_loop_t* loop, uv_getnameinfo_t* req, uv_getnameinfo_cb getnameinfo_cb, const(sockaddr)* addr, int flags);
+int uv_getnameinfo(uv_loop_t* loop, uv_getnameinfo_t* req, uv_getnameinfo_cb getnameinfo_cb, inout(sockaddr)* addr, int flags);
 /* uv_spawn() options. */
 enum uv_stdio_flags {
 	UV_IGNORE = 0x00 ,
@@ -706,7 +708,7 @@ struct uv_process_s {
 	int pid;
 	mixin UV_PROCESS_PRIVATE_FIELDS;
 };
-int uv_spawn(uv_loop_t* loop, uv_process_t* handle, const(uv_process_options_t)* options);
+int uv_spawn(uv_loop_t* loop, uv_process_t* handle, inout(uv_process_options_t)* options);
 int uv_process_kill(uv_process_t*, int signum);
 int uv_kill(int pid, int signum);
 /*
@@ -771,7 +773,7 @@ struct uv_dirent_s {
 };
 char** uv_setup_args(int argc, char** argv);
 int uv_get_process_title(char* buffer, size_t size);
-int uv_set_process_title(const(char)* title);
+int uv_set_process_title(inout(char)* title);
 int uv_resident_set_memory(size_t* rss);
 int uv_uptime(double* uptime);
 struct uv_timeval_t {
@@ -868,28 +870,28 @@ struct uv_fs_s {
 };
 void uv_fs_req_cleanup(uv_fs_t* req);
 int uv_fs_close(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_fs_cb cb);
-int uv_fs_open(uv_loop_t* loop, uv_fs_t* req, const(char)* path, int flags, int mode, uv_fs_cb cb);
-int uv_fs_read(uv_loop_t* loop, uv_fs_t* req, uv_file file, const(uv_buf_t)[] bufs, uint nbufs, int64_t offset, uv_fs_cb cb);
-int uv_fs_unlink(uv_loop_t* loop, uv_fs_t* req, const(char)* path, uv_fs_cb cb);
-int uv_fs_write(uv_loop_t* loop, uv_fs_t* req, uv_file file, const(uv_buf_t)[] bufs, uint nbufs, int64_t offset, uv_fs_cb cb);
-int uv_fs_mkdir(uv_loop_t* loop, uv_fs_t* req, const(char)* path, int mode, uv_fs_cb cb);
-int uv_fs_mkdtemp(uv_loop_t* loop, uv_fs_t* req, const(char)* tpl, uv_fs_cb cb);
-int uv_fs_rmdir(uv_loop_t* loop, uv_fs_t* req, const(char)* path, uv_fs_cb cb);
-int uv_fs_scandir(uv_loop_t* loop, uv_fs_t* req, const(char)* path, int flags, uv_fs_cb cb);
+int uv_fs_open(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int flags, int mode, uv_fs_cb cb);
+int uv_fs_read(uv_loop_t* loop, uv_fs_t* req, uv_file file, inout(uv_buf_t)* bufs, uint nbufs, int64_t offset, uv_fs_cb cb);
+int uv_fs_unlink(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
+int uv_fs_write(uv_loop_t* loop, uv_fs_t* req, uv_file file, inout(uv_buf_t)* bufs, uint nbufs, int64_t offset, uv_fs_cb cb);
+int uv_fs_mkdir(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int mode, uv_fs_cb cb);
+int uv_fs_mkdtemp(uv_loop_t* loop, uv_fs_t* req, inout(char)* tpl, uv_fs_cb cb);
+int uv_fs_rmdir(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
+int uv_fs_scandir(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int flags, uv_fs_cb cb);
 int uv_fs_scandir_next(uv_fs_t* req, uv_dirent_t* ent);
-int uv_fs_stat(uv_loop_t* loop, uv_fs_t* req, const(char)* path, uv_fs_cb cb);
+int uv_fs_stat(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
 int uv_fs_fstat(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_fs_cb cb);
-int uv_fs_rename(uv_loop_t* loop, uv_fs_t* req, const(char)* path, const(char)* new_path, uv_fs_cb cb);
+int uv_fs_rename(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, inout(char)* new_path, uv_fs_cb cb);
 int uv_fs_fsync(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_fs_cb cb);
 int uv_fs_fdatasync(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_fs_cb cb);
 int uv_fs_ftruncate(uv_loop_t* loop, uv_fs_t* req, uv_file file, int64_t offset, uv_fs_cb cb);
 int uv_fs_sendfile(uv_loop_t* loop, uv_fs_t* req, uv_file out_fd, uv_file in_fd, int64_t in_offset, size_t length, uv_fs_cb cb);
-int uv_fs_access(uv_loop_t* loop, uv_fs_t* req, const(char)* path, int mode, uv_fs_cb cb);
-int uv_fs_chmod(uv_loop_t* loop, uv_fs_t* req, const(char)* path, int mode, uv_fs_cb cb);
-int uv_fs_utime(uv_loop_t* loop, uv_fs_t* req, const(char)* path, double atime, double mtime, uv_fs_cb cb);
+int uv_fs_access(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int mode, uv_fs_cb cb);
+int uv_fs_chmod(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int mode, uv_fs_cb cb);
+int uv_fs_utime(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, double atime, double mtime, uv_fs_cb cb);
 int uv_fs_futime(uv_loop_t* loop, uv_fs_t* req, uv_file file, double atime, double mtime, uv_fs_cb cb);
-int uv_fs_lstat(uv_loop_t* loop, uv_fs_t* req, const(char)* path, uv_fs_cb cb);
-int uv_fs_link(uv_loop_t* loop, uv_fs_t* req, const(char)* path, const(char)* new_path, uv_fs_cb cb);
+int uv_fs_lstat(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
+int uv_fs_link(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, inout(char)* new_path, uv_fs_cb cb);
 /*
  * This flag can be used with uv_fs_symlink() on Windows to specify whether
  * path argument points to a directory.
@@ -900,11 +902,11 @@ enum UV_FS_SYMLINK_DIR = 0x0001 ;
  * the symlink is to be created using junction points.
  */
 enum UV_FS_SYMLINK_JUNCTION = 0x0002 ;
-int uv_fs_symlink(uv_loop_t* loop, uv_fs_t* req, const(char)* path, const(char)* new_path, int flags, uv_fs_cb cb);
-int uv_fs_readlink(uv_loop_t* loop, uv_fs_t* req, const(char)* path, uv_fs_cb cb);
-int uv_fs_realpath(uv_loop_t* loop, uv_fs_t* req, const(char)* path, uv_fs_cb cb);
+int uv_fs_symlink(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, inout(char)* new_path, int flags, uv_fs_cb cb);
+int uv_fs_readlink(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
+int uv_fs_realpath(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
 int uv_fs_fchmod(uv_loop_t* loop, uv_fs_t* req, uv_file file, int mode, uv_fs_cb cb);
-int uv_fs_chown(uv_loop_t* loop, uv_fs_t* req, const(char)* path, uv_uid_t uid, uv_gid_t gid, uv_fs_cb cb);
+int uv_fs_chown(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_uid_t uid, uv_gid_t gid, uv_fs_cb cb);
 int uv_fs_fchown(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_uid_t uid, uv_gid_t gid, uv_fs_cb cb);
 enum uv_fs_event {
 	UV_RENAME = 1 ,
@@ -925,7 +927,7 @@ struct uv_fs_poll_s {
 	void* poll_ctx;
 };
 int uv_fs_poll_init(uv_loop_t* loop, uv_fs_poll_t* handle);
-int uv_fs_poll_start(uv_fs_poll_t* handle, uv_fs_poll_cb poll_cb, const(char)* path, uint interval);
+int uv_fs_poll_start(uv_fs_poll_t* handle, uv_fs_poll_cb poll_cb, inout(char)* path, uint interval);
 int uv_fs_poll_stop(uv_fs_poll_t* handle);
 int uv_fs_poll_getpath(uv_fs_poll_t* handle, char* buffer, size_t* size);
 struct uv_signal_s {
@@ -966,26 +968,26 @@ enum uv_fs_event_flags {
 	UV_FS_EVENT_RECURSIVE = 4 
 };
 int uv_fs_event_init(uv_loop_t* loop, uv_fs_event_t* handle);
-int uv_fs_event_start(uv_fs_event_t* handle, uv_fs_event_cb cb, const(char)* path, uint flags);
+int uv_fs_event_start(uv_fs_event_t* handle, uv_fs_event_cb cb, inout(char)* path, uint flags);
 int uv_fs_event_stop(uv_fs_event_t* handle);
 int uv_fs_event_getpath(uv_fs_event_t* handle, char* buffer, size_t* size);
-int uv_ip4_addr(const(char)* ip, int port, sockaddr_in* addr);
-int uv_ip6_addr(const(char)* ip, int port, sockaddr_in6* addr);
-int uv_ip4_name(const(sockaddr_in)* src, char* dst, size_t size);
-int uv_ip6_name(const(sockaddr_in6)* src, char* dst, size_t size);
-int uv_inet_ntop(int af, const(void)* src, char* dst, size_t size);
-int uv_inet_pton(int af, const(char)* src, void* dst);
+int uv_ip4_addr(inout(char)* ip, int port, sockaddr_in* addr);
+int uv_ip6_addr(inout(char)* ip, int port, sockaddr_in6* addr);
+int uv_ip4_name(inout(sockaddr_in)* src, char* dst, size_t size);
+int uv_ip6_name(inout(sockaddr_in6)* src, char* dst, size_t size);
+int uv_inet_ntop(int af, inout(void)* src, char* dst, size_t size);
+int uv_inet_pton(int af, inout(char)* src, void* dst);
 int uv_exepath(char* buffer, size_t* size);
 int uv_cwd(char* buffer, size_t* size);
-int uv_chdir(const(char)* dir);
+int uv_chdir(inout(char)* dir);
 uint64_t uv_get_free_memory();
 uint64_t uv_get_total_memory();
 uint64_t uv_hrtime();
 void uv_disable_stdio_inheritance();
-int uv_dlopen(const(char)* filename, uv_lib_t* lib);
+int uv_dlopen(inout(char)* filename, uv_lib_t* lib);
 void uv_dlclose(uv_lib_t* lib);
-int uv_dlsym(uv_lib_t* lib, const(char)* name, void** ptr);
-const(char)* uv_dlerror(const(uv_lib_t)* lib);
+int uv_dlsym(uv_lib_t* lib, inout(char)* name, void** ptr);
+const(char)* uv_dlerror(inout(uv_lib_t)* lib);
 int uv_mutex_init(uv_mutex_t* handle);
 void uv_mutex_destroy(uv_mutex_t* handle);
 void uv_mutex_lock(uv_mutex_t* handle);
@@ -1022,7 +1024,7 @@ alias uv_thread_cb = ExternC!(void function(void* arg));
 int uv_thread_create(uv_thread_t* tid, uv_thread_cb entry, void* arg);
 uv_thread_t uv_thread_self();
 int uv_thread_join(uv_thread_t* tid);
-int uv_thread_equal(const(uv_thread_t)* t1, const(uv_thread_t)* t2);
+int uv_thread_equal(inout(uv_thread_t)* t1, inout(uv_thread_t)* t2);
 /* The presence of these unions force similar struct layout. */
 union uv_any_handle {
 	uv_async_t async ;

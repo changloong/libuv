@@ -2,7 +2,9 @@ module deimos.libuv.uv_bsd;
 import deimos.libuv._d;
 version(FreeBSD):
 extern(C) :
+pure:
 nothrow:
+@nogc:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -2,7 +2,9 @@ module deimos.libuv.uv_linux;
 import deimos.libuv._d;
 version(linux):
 extern(C) :
+pure:
 nothrow:
+@nogc:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy

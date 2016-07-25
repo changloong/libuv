@@ -1,7 +1,9 @@
 module deimos.libuv.uv_threadpool;
 import deimos.libuv._d;
 extern(C) :
+pure:
 nothrow:
+@nogc:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy

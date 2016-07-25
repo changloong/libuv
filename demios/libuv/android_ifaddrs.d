@@ -2,7 +2,9 @@ module deimos.libuv.android_ifaddrs;
 import deimos.libuv._d;
 version(Android):
 extern(C) :
+pure:
 nothrow:
+@nogc:
 /*
  * Copyright (c) 1995, 1999
  *	Berkeley Software Design, Inc.  All rights reserved.

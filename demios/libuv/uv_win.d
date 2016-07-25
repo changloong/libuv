@@ -2,7 +2,9 @@ module deimos.libuv.uv_win;
 import deimos.libuv._d;
 version(Windows):
 extern(C) :
+pure:
 nothrow:
+@nogc:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -75,7 +77,7 @@ enum GUID WSAID_GETACCEPTEXSOCKADDRS = {0xb5367df2,0xcbac,0x11cf,[0x95,0xca,0x00
 enum GUID WSAID_DISCONNECTEX = {0x7fda2e11,0x8630,0x436f,[0xa0,0x31,0xf5,0x36,0xa6,0xee,0xc1,0x57]};
 enum GUID WSAID_TRANSMITFILE = {0xb5367df0,0xcbac,0x11cf,[0x95,0xca,0x00,0x80,0x5f,0x48,0xa1,0x92]};
 alias LPFN_ACCEPTEX = ExternWindows!(BOOL function(SOCKET sListenSocket, SOCKET sAcceptSocket, PVOID lpOutputBuffer, DWORD dwReceiveDataLength, DWORD dwLocalAddressLength, DWORD dwRemoteAddressLength, LPDWORD lpdwBytesReceived, LPOVERLAPPED lpOverlapped)) ;
-alias LPFN_CONNECTEX = ExternWindows!(BOOL function(SOCKET s, const(sockaddr)* name, int namelen, PVOID lpSendBuffer, DWORD dwSendDataLength, LPDWORD lpdwBytesSent, LPOVERLAPPED lpOverlapped)) ;
+alias LPFN_CONNECTEX = ExternWindows!(BOOL function(SOCKET s, inout(sockaddr)* name, int namelen, PVOID lpSendBuffer, DWORD dwSendDataLength, LPDWORD lpdwBytesSent, LPOVERLAPPED lpOverlapped)) ;
 alias LPFN_GETACCEPTEXSOCKADDRS = ExternWindows!(void function(PVOID lpOutputBuffer, DWORD dwReceiveDataLength, DWORD dwLocalAddressLength, DWORD dwRemoteAddressLength, LPSOCKADDR* LocalSockaddr, LPINT LocalSockaddrLength, LPSOCKADDR* RemoteSockaddr, LPINT RemoteSockaddrLength)) ;
 alias LPFN_DISCONNECTEX = ExternWindows!(BOOL function(SOCKET hSocket, LPOVERLAPPED lpOverlapped, DWORD dwFlags, DWORD reserved)) ;
 alias LPFN_TRANSMITFILE = ExternWindows!(BOOL function(SOCKET hSocket, HANDLE hFile, DWORD nNumberOfBytesToWrite, DWORD nNumberOfBytesPerSend, LPOVERLAPPED lpOverlapped, LPTRANSMIT_FILE_BUFFERS lpTransmitBuffers, DWORD dwFlags)) ;

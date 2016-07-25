@@ -2,7 +2,9 @@ module deimos.libuv.pthread_barrier;
 import deimos.libuv._d;
 static if( isAndroidOS || isMacOS ) :
 extern(C) :
+pure:
 nothrow:
+@nogc:
 /*
 Copyright (c) 2016, Kari Tristan Helgason <kthelgason@gmail.com>
 
@@ -45,6 +47,6 @@ struct pthread_barrier_t {
 	_uv_barrier* b;
 	char[UV_BARRIER_STRUCT_PADDING] _pad;
 };
-int pthread_barrier_init(pthread_barrier_t* barrier, const(void)* barrier_attr, uint count);
+int pthread_barrier_init(pthread_barrier_t* barrier, inout(void)* barrier_attr, uint count);
 int pthread_barrier_wait(pthread_barrier_t* barrier);
 int pthread_barrier_destroy(pthread_barrier_t* barrier);
