@@ -13,12 +13,6 @@ version(Posix) {
 	package import core.sys.posix.termios;
 	package import core.sys.posix.dirent : dirent;
 	package import core.sys.posix.semaphore : sem_t;
-	version (X86) {
-		// @fixme druntime pthread_rwlock_t size is 36, linux is 32
-		struct pthread_rwlock_t {
-			byte[32] __size;
-		}
-	}
 }
 
 version(Windows) {
@@ -32,7 +26,17 @@ version(Windows) {
 }
 
 version(linux) {
-	enum isLinuxOS	= true ;	
+	enum isLinuxOS	= true ;
+	version (X86) {
+		// @fixme druntime pthread_rwlock_t size is (36, 64), linux is (32, 56)
+		struct pthread_rwlock_t {
+			byte[32] __size;
+		}
+	} else {
+		struct pthread_rwlock_t {
+			byte[56] __size;
+		}
+	}
 } else {
 	enum isLinuxOS	= false ;
 }
