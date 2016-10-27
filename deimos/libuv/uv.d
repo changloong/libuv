@@ -281,6 +281,7 @@ enum uv_membership {
 	UV_LEAVE_GROUP = 0 ,
 	UV_JOIN_GROUP
 };
+int uv_translate_sys_error(int sys_errno);
 const(char)* uv_strerror(int err);
 const(char)* uv_err_name(int err);
 template UV_REQ_FIELDS() {

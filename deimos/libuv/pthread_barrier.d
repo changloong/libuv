@@ -35,6 +35,8 @@ static if( isAndroidOS ) {
 	enum UV_BARRIER_STRUCT_PADDING = pthread_mutex_t.sizeof + pthread_cond_t.sizeof + uint.sizeof - ptrdiff_t.sizeof;
 } else static if( isMacOS ) {
 	enum UV_BARRIER_STRUCT_PADDING = pthread_mutex_t.sizeof + 2 * sem_t.sizeof + 2 * uint.sizeof - ptrdiff_t.sizeof;
+} else {
+	enum UV_BARRIER_STRUCT_PADDING = 0 ;
 }
 struct _uv_barrier {
 	pthread_mutex_t mutex;
