@@ -186,7 +186,7 @@ version(Windows) {
  * defined. Fortunately, its value is always 64 so it's possible albeit
  * icky to hard-code it.
  */
-static if( isEHOSTDOWN ) {
+version( linux ) {
 	enum UV__EHOSTDOWN = -EHOSTDOWN;
 } else static if( isMacOS || isBsdOS ) {
 	enum UV__EHOSTDOWN = -64;

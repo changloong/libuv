@@ -37,12 +37,16 @@ nothrow:
 /* include(netdb.h); */
 /* include(termios.h); */
 /* include(pwd.h); */
-/* include(semaphore.h); */
+static if( isOS390 ) {
+	/* include(semaphore.h); */
+}
 /* include(pthread.h); */
 /* include(signal.h); */
 package import deimos.libuv.uv_threadpool;
 static if( isLinuxOS ) {
 	package import deimos.libuv.uv_linux;
+} else static if( isOS390 ) {
+	package import deimos.libuv.uv_os390;
 } else static if( isAixOS ) {
 	package import deimos.libuv.uv_aix;
 } else static if( isSunOS ) {

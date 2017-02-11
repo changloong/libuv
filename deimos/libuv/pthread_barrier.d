@@ -23,8 +23,10 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /* _UV_PTHREAD_BARRIER_ */
 /* include(errno.h); */
 /* include(pthread.h); */
-/* include(semaphore.h); */
-/* sem_t */
+static if( isOS390 ) {
+	/* include(semaphore.h); */
+	/* sem_t */
+}
 enum PTHREAD_BARRIER_SERIAL_THREAD = 0x12345 ;
 /*
  * To maintain ABI compatibility with

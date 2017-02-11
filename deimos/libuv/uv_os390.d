@@ -26,3 +26,6 @@ nothrow:
  */
 /* UV_MVS_H */
 alias UV_PLATFORM_SEM_T = int ;
+template UV_PLATFORM_LOOP_FIELDS() {
+	void* ep;
+}

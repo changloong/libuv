@@ -41,6 +41,7 @@ enum LOCALE_INVARIANT = 0x007f;
 /* include(windows.h); */
 /* include(process.h); */
 /* include(signal.h); */
+/* include(fcntl.h); */
 /* include(sys/stat.h); */
 /* include(tree.h); */
 package import deimos.libuv.uv_threadpool;

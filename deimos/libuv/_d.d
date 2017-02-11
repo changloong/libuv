@@ -1,6 +1,7 @@
 module deimos.libuv._d;
 
 package import deimos.libuv.uv;
+package import deimos.libuv.uv_errno;
 
 package import core.stdc.stdio : FILE;
 package import core.stdc.stdint;
@@ -72,12 +73,18 @@ version(Android) {
 	enum isAndroidOS	= false ;
 }
 
+enum isOS390 = false ;
+
 
 package:
 
 enum isDtUnknow = true ;
 enum isGnuC	= false ;
-enum isEHOSTDOWN = false ;
+version(linux) {
+	enum isEHOSTDOWN = true ;
+} else {
+	enum isEHOSTDOWN = false ;
+}
 
 struct RB_ENTRY(T) { 
 	T*	rbe_left;
