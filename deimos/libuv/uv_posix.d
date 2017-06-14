@@ -1,4 +1,10 @@
-/* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
+module deimos.libuv.uv_posix;
+import deimos.libuv._d;
+extern(C) :
+pure:
+nothrow:
+@nogc:
+/* Copyright libuv project contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -18,26 +24,10 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-
-#ifndef UV_VERSION_H
-#define UV_VERSION_H
-
- /*
- * Versions with the same major number are ABI stable. API is allowed to
- * evolve between minor releases, but only in a backwards compatible way.
- * Make sure you update the -soname directives in configure.ac
- * and uv.gyp whenever you bump UV_VERSION_MAJOR or UV_VERSION_MINOR (but
- * not UV_VERSION_PATCH.)
- */
-
-#define UV_VERSION_MAJOR 1
-#define UV_VERSION_MINOR 12
-#define UV_VERSION_PATCH 0
-#define UV_VERSION_IS_RELEASE 1
-#define UV_VERSION_SUFFIX ""
-
-#define UV_VERSION_HEX  ((UV_VERSION_MAJOR << 16) | \
-                         (UV_VERSION_MINOR <<  8) | \
-                         (UV_VERSION_PATCH))
-
-#endif /* UV_VERSION_H */
+/* UV_POSIX_H */
+template UV_PLATFORM_LOOP_FIELDS() {
+	pollfd* poll_fds;
+	size_t poll_fds_used;
+	size_t poll_fds_size;
+	ubyte poll_fds_iterating;
+}

@@ -55,6 +55,8 @@ static if( isLinuxOS ) {
 	package import deimos.libuv.uv_darwin;
 } else static if( isBsdOS ) {
 	package import deimos.libuv.uv_bsd;
+} else static if( isCygWin ) {
+	package import deimos.libuv.uv_posix;
 }
 package import deimos.libuv.pthread_barrier;
 enum NI_MAXHOST = 1025;
@@ -74,12 +76,6 @@ struct uv__io_s {
 	/* Current event mask. */
 	int fd;
 	mixin UV_IO_PRIVATE_PLATFORM_FIELDS;
-};
-alias uv__async_cb = ExternC!(void function(uv_loop_s* loop, uv__async* w, uint nevents));
-struct uv__async {
-	uv__async_cb cb;
-	uv__io_t io_watcher;
-	int wfd;
 };
 static if( !isMacOS ) {
 	alias UV_PLATFORM_SEM_T = sem_t;
@@ -143,7 +139,9 @@ template UV_LOOP_PRIVATE_FIELDS() {
 	void*[2] check_handles;
 	void*[2] idle_handles;
 	void*[2] async_handles;
-	uv__async async_watcher;
+	void function() async_unused;
+	uv__io_t async_io_watcher;
+	int async_wfd;
 	struct timer_heap_s {
 		void* min;
 		uint nelts;

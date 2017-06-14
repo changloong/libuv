@@ -26,6 +26,9 @@ version(Windows) {
 	enum isMSVC2008 	= false ;
 }
 
+enum isCygWin = false ;
+enum isMSYS	= false ;
+
 version(linux) {
 	enum isLinuxOS	= true ;
 	version (X86) {

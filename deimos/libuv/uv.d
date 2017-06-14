@@ -223,6 +223,7 @@ void uv_loop_delete(uv_loop_t*);
 size_t uv_loop_size();
 int uv_loop_alive(inout(uv_loop_t)* loop);
 int uv_loop_configure(uv_loop_t* loop, uv_loop_option option, ...);
+int uv_loop_fork(uv_loop_t* loop);
 int uv_run(uv_loop_t*, uv_run_mode mode);
 void uv_stop(uv_loop_t*);
 void uv_ref(uv_handle_t*);
@@ -777,6 +778,7 @@ int uv_get_process_title(char* buffer, size_t size);
 int uv_set_process_title(inout(char)* title);
 int uv_resident_set_memory(size_t* rss);
 int uv_uptime(double* uptime);
+uv_os_fd_t uv_get_osfhandle(int fd);
 struct uv_timeval_t {
 	ptrdiff_t tv_sec;
 	ptrdiff_t tv_usec;
@@ -824,6 +826,10 @@ int uv_cpu_info(uv_cpu_info_t** cpu_infos, int* count);
 void uv_free_cpu_info(uv_cpu_info_t* cpu_infos, int count);
 int uv_interface_addresses(uv_interface_address_t** addresses, int* count);
 void uv_free_interface_addresses(uv_interface_address_t* addresses, int count);
+int uv_os_getenv(inout(char)* name, char* buffer, size_t* size);
+int uv_os_setenv(inout(char)* name, inout(char)* value);
+int uv_os_unsetenv(inout(char)* name);
+int uv_os_gethostname(char* buffer, size_t* size);
 enum uv_fs_type {
 	UV_FS_UNKNOWN = - 1,
 	UV_FS_CUSTOM,
@@ -939,6 +945,7 @@ struct uv_signal_s {
 };
 int uv_signal_init(uv_loop_t* loop, uv_signal_t* handle);
 int uv_signal_start(uv_signal_t* handle, uv_signal_cb signal_cb, int signum);
+int uv_signal_start_oneshot(uv_signal_t* handle, uv_signal_cb signal_cb, int signum);
 int uv_signal_stop(uv_signal_t* handle);
 void uv_loadavg(double[3] avg);
 /*
