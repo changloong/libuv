@@ -28,6 +28,7 @@ static if( isOS390 ) {
 	/* sem_t */
 }
 enum PTHREAD_BARRIER_SERIAL_THREAD = 0x12345 ;
+enum UV__PTHREAD_BARRIER_FALLBACK = 1 ;
 /*
  * To maintain ABI compatibility with
  * libuv v1.x struct is padded according

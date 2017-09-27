@@ -7,6 +7,7 @@ version(OSX) {
 		ECHARSET = 4080 ,
 		ENONET = 4056 , 
 		ESHUTDOWN = 4042 , 
+		EREMOTEIO =	4030 ,
 	}
 }
 version(linux) {
@@ -112,6 +113,7 @@ version(Windows) {
 	enum UV__ESHUTDOWN = -4042;
 	enum UV__ESPIPE = -4041;
 	enum UV__ESRCH = -4040;
+	enum UV__EREMOTEIO = -4030;
 	enum UV__ETIMEDOUT = -4039;
 	enum UV__ETXTBSY = -4038;
 	enum UV__EXDEV = -4037;
@@ -172,6 +174,7 @@ version(Windows) {
 	enum UV__ESHUTDOWN = 0 - ESHUTDOWN;
 	enum UV__ESPIPE = 0 - ESPIPE;
 	enum UV__ESRCH = 0 - ESRCH;
+	enum UV__EREMOTEIO = 0 - EREMOTEIO;
 	enum UV__ETIMEDOUT = 0 - ETIMEDOUT;
 	enum UV__ETXTBSY = -0 - ETXTBSY;
 	enum UV__EXDEV = 0 - EXDEV;

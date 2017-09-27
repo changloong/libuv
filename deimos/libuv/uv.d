@@ -120,6 +120,7 @@ enum uv_errno_t {
 	UV_ENXIO = UV__ENXIO ,
 	UV_EMLINK = UV__EMLINK ,
 	UV_EHOSTDOWN = UV__EHOSTDOWN ,
+	UV_EREMOTEIO = UV__EREMOTEIO ,
 	UV_ERRNO_MAX = UV__EOF - 1
 };
 enum uv_handle_type {
@@ -519,7 +520,8 @@ struct uv_poll_s {
 enum uv_poll_event {
 	UV_READABLE = 1 ,
 	UV_WRITABLE = 2 ,
-	UV_DISCONNECT = 4 
+	UV_DISCONNECT = 4 ,
+	UV_PRIORITIZED = 8 
 };
 int uv_poll_init(uv_loop_t* loop, uv_poll_t* handle, int fd);
 int uv_poll_init_socket(uv_loop_t* loop, uv_poll_t* handle, uv_os_sock_t socket);
@@ -860,7 +862,8 @@ enum uv_fs_type {
 	UV_FS_READLINK,
 	UV_FS_CHOWN,
 	UV_FS_FCHOWN,
-	UV_FS_REALPATH
+	UV_FS_REALPATH,
+	UV_FS_COPYFILE
 };
 /* uv_fs_t is a subclass of uv_req_t. */
 struct uv_fs_s {
@@ -881,6 +884,12 @@ int uv_fs_open(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int flags, int 
 int uv_fs_read(uv_loop_t* loop, uv_fs_t* req, uv_file file, inout(uv_buf_t)* bufs, uint nbufs, int64_t offset, uv_fs_cb cb);
 int uv_fs_unlink(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
 int uv_fs_write(uv_loop_t* loop, uv_fs_t* req, uv_file file, inout(uv_buf_t)* bufs, uint nbufs, int64_t offset, uv_fs_cb cb);
+/*
+ * This flag can be used with uv_fs_copyfile() to return an error if the
+ * destination already exists.
+ */
+enum UV_FS_COPYFILE_EXCL = 0x0001 ;
+int uv_fs_copyfile(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, inout(char)* new_path, int flags, uv_fs_cb cb);
 int uv_fs_mkdir(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int mode, uv_fs_cb cb);
 int uv_fs_mkdtemp(uv_loop_t* loop, uv_fs_t* req, inout(char)* tpl, uv_fs_cb cb);
 int uv_fs_rmdir(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
