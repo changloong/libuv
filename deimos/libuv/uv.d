@@ -1006,6 +1006,7 @@ void uv_dlclose(uv_lib_t* lib);
 int uv_dlsym(uv_lib_t* lib, inout(char)* name, void** ptr);
 const(char)* uv_dlerror(inout(uv_lib_t)* lib);
 int uv_mutex_init(uv_mutex_t* handle);
+int uv_mutex_init_recursive(uv_mutex_t* handle);
 void uv_mutex_destroy(uv_mutex_t* handle);
 void uv_mutex_lock(uv_mutex_t* handle);
 int uv_mutex_trylock(uv_mutex_t* handle);
