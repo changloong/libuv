@@ -122,6 +122,7 @@ version(Windows) {
 	enum UV__ERANGE = -4034;
 	enum UV__ENXIO = -4033;
 	enum UV__EMLINK = -4032;
+	enum UV__ENOTTY = -4029;
 } else {
 	enum UV__E2BIG = 0 - E2BIG;
 	enum UV__EACCES = 0 - EACCES;
@@ -183,6 +184,7 @@ version(Windows) {
 	enum UV__ERANGE = 0 - ERANGE;
 	enum UV__ENXIO = 0 - ENXIO;
 	enum UV__EMLINK = 0 - EMLINK;
+	enum UV__ENOTTY = 0 - ENOTTY;
 }
 
 /* EHOSTDOWN is not visible on BSD-like systems when _POSIX_C_SOURCE is

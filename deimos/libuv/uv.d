@@ -121,6 +121,7 @@ enum uv_errno_t {
 	UV_EMLINK = UV__EMLINK ,
 	UV_EHOSTDOWN = UV__EHOSTDOWN ,
 	UV_EREMOTEIO = UV__EREMOTEIO ,
+	UV_ENOTTY = UV__ENOTTY ,
 	UV_ERRNO_MAX = UV__EOF - 1
 };
 enum uv_handle_type {
@@ -512,6 +513,7 @@ int uv_pipe_getpeername(inout(uv_pipe_t)* handle, char* buffer, size_t* size);
 void uv_pipe_pending_instances(uv_pipe_t* handle, int count);
 int uv_pipe_pending_count(uv_pipe_t* handle);
 uv_handle_type uv_pipe_pending_type(uv_pipe_t* handle);
+int uv_pipe_chmod(uv_pipe_t* handle, int flags);
 struct uv_poll_s {
 	mixin UV_HANDLE_FIELDS;
 	uv_poll_cb poll_cb;
@@ -824,6 +826,7 @@ int uv_os_homedir(char* buffer, size_t* size);
 int uv_os_tmpdir(char* buffer, size_t* size);
 int uv_os_get_passwd(uv_passwd_t* pwd);
 void uv_os_free_passwd(uv_passwd_t* pwd);
+uv_pid_t uv_os_getppid();
 int uv_cpu_info(uv_cpu_info_t** cpu_infos, int* count);
 void uv_free_cpu_info(uv_cpu_info_t* cpu_infos, int count);
 int uv_interface_addresses(uv_interface_address_t** addresses, int* count);
@@ -994,6 +997,8 @@ int uv_ip4_name(inout(sockaddr_in)* src, char* dst, size_t size);
 int uv_ip6_name(inout(sockaddr_in6)* src, char* dst, size_t size);
 int uv_inet_ntop(int af, inout(void)* src, char* dst, size_t size);
 int uv_inet_pton(int af, inout(char)* src, void* dst);
+int uv_if_indextoname(uint ifindex, char* buffer, size_t* size);
+int uv_if_indextoiid(uint ifindex, char* buffer, size_t* size);
 int uv_exepath(char* buffer, size_t* size);
 int uv_cwd(char* buffer, size_t* size);
 int uv_chdir(inout(char)* dir);

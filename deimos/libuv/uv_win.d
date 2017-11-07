@@ -118,6 +118,7 @@ struct uv_buf_t {
 alias uv_file = int ;
 alias uv_os_sock_t = SOCKET ;
 alias uv_os_fd_t = HANDLE ;
+alias uv_pid_t = int ;
 alias uv_thread_t = HANDLE ;
 alias uv_sem_t = HANDLE ;
 /* This condition variable implementation is based on the SetEvent solution
@@ -540,4 +541,27 @@ template UV_SIGNAL_PRIVATE_FIELDS() {
 enum F_OK = 0;
 enum R_OK = 4;
 enum W_OK = 2;
+/* fs open() flags supported on this platform: */
 enum X_OK = 1;
+alias UV_FS_O_APPEND = _O_APPEND ;
+alias UV_FS_O_CREAT = _O_CREAT ;
+alias UV_FS_O_EXCL = _O_EXCL ;
+alias UV_FS_O_RANDOM = _O_RANDOM ;
+alias UV_FS_O_RDONLY = _O_RDONLY ;
+alias UV_FS_O_RDWR = _O_RDWR ;
+alias UV_FS_O_SEQUENTIAL = _O_SEQUENTIAL ;
+alias UV_FS_O_SHORT_LIVED = _O_SHORT_LIVED ;
+alias UV_FS_O_TEMPORARY = _O_TEMPORARY ;
+alias UV_FS_O_TRUNC = _O_TRUNC ;
+/* fs open() flags supported on other platforms (or mapped on this platform): */
+alias UV_FS_O_WRONLY = _O_WRONLY ;
+enum UV_FS_O_DIRECT = 0x2000000 ;
+enum UV_FS_O_DIRECTORY = 0 ;
+enum UV_FS_O_DSYNC = 0x4000000 ;
+enum UV_FS_O_EXLOCK = 0 ;
+enum UV_FS_O_NOATIME = 0 ;
+enum UV_FS_O_NOCTTY = 0 ;
+enum UV_FS_O_NOFOLLOW = 0 ;
+enum UV_FS_O_NONBLOCK = 0 ;
+enum UV_FS_O_SYMLINK = 0 ;
+enum UV_FS_O_SYNC = 0x8000000 ;

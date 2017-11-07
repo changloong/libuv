@@ -3,7 +3,7 @@ module deimos.libuv._d;
 package import deimos.libuv.uv;
 package import deimos.libuv.uv_errno;
 
-package import core.stdc.stdio : FILE;
+package import core.stdc.stdio;
 package import core.stdc.stdint;
 
 version(Posix) {
@@ -14,6 +14,10 @@ version(Posix) {
 	package import core.sys.posix.termios;
 	package import core.sys.posix.dirent : dirent;
 	package import core.sys.posix.semaphore : sem_t;
+	package import core.sys.posix.net.if_ : IF_NAMESIZE ;
+	const UV_IF_NAMESIZE = IF_NAMESIZE + 1 ;
+} else {
+	const UV_IF_NAMESIZE = 16 + 1 ;
 }
 
 version(Windows) {

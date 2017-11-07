@@ -35,6 +35,7 @@ nothrow:
 /* include(netinet/tcp.h); */
 /* include(arpa/inet.h); */
 /* include(netdb.h); */
+/* include(net/if.h); */
 /* include(termios.h); */
 /* include(pwd.h); */
 static if( isOS390 ) {
@@ -94,6 +95,7 @@ struct uv_buf_t {
 alias uv_file = int ;
 alias uv_os_sock_t = int ;
 alias uv_os_fd_t = int ;
+alias uv_pid_t = pid_t ;
 alias uv_once_t = pthread_once_t ;
 alias uv_thread_t = pthread_t ;
 alias uv_mutex_t = pthread_mutex_t ;
@@ -293,3 +295,26 @@ template UV_FS_EVENT_PRIVATE_FIELDS() {
 	uv_fs_event_cb cb;
 	mixin UV_PLATFORM_FS_EVENT_FIELDS;
 }
+/* fs open() flags supported on this platform: */
+enum UV_FS_O_APPEND = 0 ;
+enum UV_FS_O_CREAT = 0 ;
+enum UV_FS_O_DIRECT = 0 ;
+enum UV_FS_O_DIRECTORY = 0 ;
+enum UV_FS_O_DSYNC = 0 ;
+enum UV_FS_O_EXCL = 0 ;
+enum UV_FS_O_EXLOCK = 0 ;
+enum UV_FS_O_NOATIME = 0 ;
+enum UV_FS_O_NOCTTY = 0 ;
+enum UV_FS_O_NOFOLLOW = 0 ;
+enum UV_FS_O_NONBLOCK = 0 ;
+enum UV_FS_O_RDONLY = 0 ;
+enum UV_FS_O_RDWR = 0 ;
+enum UV_FS_O_SYMLINK = 0 ;
+enum UV_FS_O_SYNC = 0 ;
+enum UV_FS_O_TRUNC = 0 ;
+enum UV_FS_O_WRONLY = 0 ;
+/* fs open() flags supported on other platforms: */
+enum UV_FS_O_RANDOM = 0 ;
+enum UV_FS_O_SHORT_LIVED = 0 ;
+enum UV_FS_O_SEQUENTIAL = 0 ;
+enum UV_FS_O_TEMPORARY = 0 ;
