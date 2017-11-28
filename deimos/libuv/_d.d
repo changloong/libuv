@@ -24,7 +24,45 @@ version(Windows) {
 	enum isWindowsOS	= true ;
 	enum isMSVC2008 	= true ;
 	public import core.sys.windows.winsock2 : addrinfo, sockaddr, sockaddr_in, sockaddr_in6,  AF_INET, AF_INET6, SOCK_STREAM, IPPROTO_TCP;
-	package import core.sys.windows.basetyps;
+	package import core.sys.windows.mswsock : LPTRANSMIT_FILE_BUFFERS, LPWSABUF ;
+	package import core.sys.windows.wincon ;
+	package import 
+			core.stdc.stdio,
+			core.sys.windows.basetyps, 	// GUID
+			core.sys.windows.basetsd, 
+			core.sys.windows.winnt,	  // BOOL, PVOID, DWORD, LPINT
+			core.sys.windows.winsock2,	// SOCKET	
+			core.sys.windows.winbase;	// CRITICAL_SECTION
+	package enum {
+		_O_RANDOM  = 0x0010 ,
+		_O_SEQUENTIAL = 0x0020 ,
+		_O_TEMPORARY = 0x0040 ,
+		_O_SHORT_LIVED = 0x1000 ,
+	};
+	package enum {
+		UV_DIRENT_UNKNOWN,
+		UV_DIRENT_FILE,
+		UV_DIRENT_DIR,
+		UV_DIRENT_LINK,
+		UV_DIRENT_FIFO,
+		UV_DIRENT_SOCKET,
+		UV_DIRENT_CHAR,
+		UV_DIRENT_BLOCK
+	};
+	alias sockaddr_storage = SOCKADDR_STORAGE ;
+	alias ssize_t = size_t;
+	struct addrinfoW {
+		int              ai_flags;
+		int              ai_family;
+		int              ai_socktype;
+		int              ai_protocol;
+		size_t           ai_addrlen;
+		PWSTR            ai_canonname;
+		sockaddr  *ai_addr;
+		addrinfoW  *ai_next;
+    } ;
+    alias ADDRINFOW = addrinfoW;
+    alias PADDRINFOW = ADDRINFOW*;
 } else {
 	enum isWindowsOS	= false ;
 	enum isMSVC2008 	= false ;
@@ -116,7 +154,7 @@ template ExternC(T) if (is(typeof(*(T.init)) P == function)) {
 template ExternWindows(T) if (is(typeof(*(T.init)) P == function)) {
 	static if (is(typeof(*(T.init)) R == return)) {
 		static if (is(typeof(*(T.init)) P == function)) {
-			alias ExternC = extern(Windows) R function(P) ;
+			alias ExternWindows = extern(Windows) R function(P) ;
 		}
 	}
 }

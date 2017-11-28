@@ -253,27 +253,27 @@ template UV_CONNECT_PRIVATE_FIELDS() {};
 template UV_SHUTDOWN_PRIVATE_FIELDS() {};
 template UV_UDP_SEND_PRIVATE_FIELDS() {};
 template UV_PRIVATE_REQ_TYPES() {
-	struct uv_pipe_accept_s {
+	struct uv_pipe_accept_t {
 		mixin UV_REQ_FIELDS;
 		HANDLE pipeHandle;
-		uv_pipe_accept_s* next_pending;
+		uv_pipe_accept_t* next_pending;
 	};
-	uv_pipe_accept_s uv_pipe_accept_s;
-	struct uv_tcp_accept_s {
+	uv_pipe_accept_t uv_pipe_accept_s;
+	struct uv_tcp_accept_t {
 		mixin UV_REQ_FIELDS;
 		SOCKET accept_socket;
 		char[sockaddr_storage.sizeof*2+32] accept_buffer;
 		HANDLE event_handle;
 		HANDLE wait_handle;
-		uv_tcp_accept_s* next_pending;
+		uv_tcp_accept_t* next_pending;
 	};
-	uv_tcp_accept_s uv_tcp_accept_s;
-	struct uv_read_s {
+	uv_tcp_accept_t uv_tcp_accept_s;
+	struct uv_read_t {
 		mixin UV_REQ_FIELDS;
 		HANDLE event_handle;
 		HANDLE wait_handle;
 	};
-	uv_read_s uv_read_s;
+	uv_read_t uv_read_s;
 }
 template uv_stream_connection_fields() {
 	uint write_reqs_pending;
