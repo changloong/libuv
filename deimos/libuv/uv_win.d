@@ -555,13 +555,13 @@ alias UV_FS_O_TEMPORARY = _O_TEMPORARY ;
 alias UV_FS_O_TRUNC = _O_TRUNC ;
 /* fs open() flags supported on other platforms (or mapped on this platform): */
 alias UV_FS_O_WRONLY = _O_WRONLY ;
-enum UV_FS_O_DIRECT = 0x2000000 ;
+enum UV_FS_O_DIRECT = 0x02000000 ;
 enum UV_FS_O_DIRECTORY = 0 ;
-enum UV_FS_O_DSYNC = 0x4000000 ;
-enum UV_FS_O_EXLOCK = 0 ;
+enum UV_FS_O_DSYNC = 0x04000000 ;
+enum UV_FS_O_EXLOCK = 0x10000000 ;
 enum UV_FS_O_NOATIME = 0 ;
 enum UV_FS_O_NOCTTY = 0 ;
 enum UV_FS_O_NOFOLLOW = 0 ;
 enum UV_FS_O_NONBLOCK = 0 ;
 enum UV_FS_O_SYMLINK = 0 ;
-enum UV_FS_O_SYNC = 0x8000000 ;
+enum UV_FS_O_SYNC = 0x08000000 ;

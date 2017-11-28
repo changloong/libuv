@@ -47,6 +47,8 @@ static if( isLinuxOS ) {
 	package import deimos.libuv.uv_linux;
 } else static if( isOS390 ) {
 	package import deimos.libuv.uv_os390;
+} else static if( isOS400 ) {
+	package import deimos.libuv.uv_posix;
 } else static if( isAixOS ) {
 	package import deimos.libuv.uv_aix;
 } else static if( isSunOS ) {

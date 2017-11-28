@@ -81,6 +81,7 @@ version(Android) {
 }
 
 enum isOS390 = false ;
+enum isOS400 = false ;
 
 
 package:
