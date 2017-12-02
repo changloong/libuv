@@ -826,6 +826,7 @@ int uv_os_homedir(char* buffer, size_t* size);
 int uv_os_tmpdir(char* buffer, size_t* size);
 int uv_os_get_passwd(uv_passwd_t* pwd);
 void uv_os_free_passwd(uv_passwd_t* pwd);
+uv_pid_t uv_os_getpid();
 uv_pid_t uv_os_getppid();
 int uv_cpu_info(uv_cpu_info_t** cpu_infos, int* count);
 void uv_free_cpu_info(uv_cpu_info_t* cpu_infos, int count);

@@ -63,6 +63,11 @@ version(Windows) {
     } ;
     alias ADDRINFOW = addrinfoW;
     alias PADDRINFOW = ADDRINFOW*;
+    struct WSABUF {
+        ULONG len;
+        CHAR* buf;
+    }
+    alias LPWSABUF = WSABUF*;
 } else {
 	enum isWindowsOS	= false ;
 	enum isMSVC2008 	= false ;
