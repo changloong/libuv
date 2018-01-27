@@ -25,7 +25,7 @@ nothrow:
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-enum _WIN32_WINNT = 0x0502;
+enum _WIN32_WINNT = 0x0600;
 /* include(winsock2.h); */
 struct pollfd {
 	SOCKET fd;

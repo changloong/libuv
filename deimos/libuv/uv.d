@@ -329,7 +329,16 @@ struct uv_handle_s {
 	mixin UV_HANDLE_FIELDS;
 };
 size_t uv_handle_size(uv_handle_type type);
+uv_handle_type uv_handle_get_type(inout(uv_handle_t)* handle);
+const(char)* uv_handle_type_name(uv_handle_type type);
+void* uv_handle_get_data(inout(uv_handle_t)* handle);
+uv_loop_t* uv_handle_get_loop(inout(uv_handle_t)* handle);
+void uv_handle_set_data(uv_handle_t* handle, void* data);
 size_t uv_req_size(uv_req_type type);
+void* uv_req_get_data(inout(uv_req_t)* req);
+void uv_req_set_data(uv_req_t* req, void* data);
+uv_req_type uv_req_get_type(inout(uv_req_t)* req);
+const(char)* uv_req_type_name(uv_req_type type);
 int uv_is_active(inout(uv_handle_t)* handle);
 void uv_walk(uv_loop_t* loop, uv_walk_cb walk_cb, void* arg);
 /* Helpers for ad hoc debugging, no API/ABI stability guaranteed. */
@@ -358,6 +367,7 @@ struct uv_stream_s {
 	mixin UV_HANDLE_FIELDS;
 	mixin UV_STREAM_FIELDS;
 };
+size_t uv_stream_get_write_queue_size(inout(uv_stream_t)* stream);
 int uv_listen(uv_stream_t* stream, int backlog, uv_connection_cb cb);
 int uv_accept(uv_stream_t* server, uv_stream_t* client);
 int uv_read_start(uv_stream_t*, uv_alloc_cb alloc_cb, uv_read_cb read_cb);
@@ -468,6 +478,8 @@ int uv_udp_send(uv_udp_send_t* req, uv_udp_t* handle, inout(uv_buf_t)* bufs, uin
 int uv_udp_try_send(uv_udp_t* handle, inout(uv_buf_t)* bufs, uint nbufs, inout(sockaddr)* addr);
 int uv_udp_recv_start(uv_udp_t* handle, uv_alloc_cb alloc_cb, uv_udp_recv_cb recv_cb);
 int uv_udp_recv_stop(uv_udp_t* handle);
+size_t uv_udp_get_send_queue_size(inout(uv_udp_t)* handle);
+size_t uv_udp_get_send_queue_count(inout(uv_udp_t)* handle);
 /*
  * uv_tty_t is a subclass of uv_stream_t.
  *
@@ -717,6 +729,7 @@ struct uv_process_s {
 int uv_spawn(uv_loop_t* loop, uv_process_t* handle, inout(uv_process_options_t)* options);
 int uv_process_kill(uv_process_t*, int signum);
 int uv_kill(int pid, int signum);
+uv_pid_t uv_process_get_pid(inout(uv_process_t)*);
 /*
  * uv_work_t is a subclass of uv_req_t.
  */
@@ -882,6 +895,11 @@ struct uv_fs_s {
 	/* Stores the result of uv_fs_stat() and uv_fs_fstat(). */
 	mixin UV_FS_PRIVATE_FIELDS;
 };
+uv_fs_type uv_fs_get_type(inout(uv_fs_t)*);
+ssize_t uv_fs_get_result(inout(uv_fs_t)*);
+void* uv_fs_get_ptr(inout(uv_fs_t)*);
+const(char)* uv_fs_get_path(inout(uv_fs_t)*);
+uv_stat_t* uv_fs_get_statbuf(uv_fs_t*);
 void uv_fs_req_cleanup(uv_fs_t* req);
 int uv_fs_close(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_fs_cb cb);
 int uv_fs_open(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int flags, int mode, uv_fs_cb cb);
@@ -1090,4 +1108,6 @@ struct uv_loop_s {
 	uint stop_flag;
 	mixin UV_LOOP_PRIVATE_FIELDS;
 };
+void* uv_loop_get_data(inout(uv_loop_t)*);
+void uv_loop_set_data(uv_loop_t*, void* data);
 /* Don't export the private CPP symbols. */

@@ -29,3 +29,6 @@ alias UV_PLATFORM_SEM_T = int ;
 template UV_PLATFORM_LOOP_FIELDS() {
 	void* ep;
 }
+template UV_PLATFORM_FS_EVENT_FIELDS() {
+	char[8] rfis_rftok;
+}
