@@ -50,7 +50,10 @@ version(Windows) {
 		UV_DIRENT_BLOCK
 	};
 	alias sockaddr_storage = SOCKADDR_STORAGE ;
-	alias ssize_t = size_t;
+	static if( size_t.sizeof == 8 )
+	    	alias ssize_t = long;
+    	else
+    		alias ssize_t = int;
 	struct addrinfoW {
 		int              ai_flags;
 		int              ai_family;
@@ -67,7 +70,7 @@ version(Windows) {
         ULONG len;
         CHAR* buf;
     }
-    alias LPWSABUF = WSABUF*;
+    
 } else {
 	enum isWindowsOS	= false ;
 	enum isMSVC2008 	= false ;
