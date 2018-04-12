@@ -292,8 +292,7 @@ template UV_REQ_FIELDS() {
 	/* read-only */
 	uv_req_type type;
 	/* private */
-	void*[2] active_queue;
-	void*[4] reserved;
+	void*[6] reserved;
 	mixin UV_REQ_PRIVATE_FIELDS;
 }
 /* Abstract base class of all requests. */
@@ -911,6 +910,16 @@ int uv_fs_write(uv_loop_t* loop, uv_fs_t* req, uv_file file, inout(uv_buf_t)* bu
  * destination already exists.
  */
 enum UV_FS_COPYFILE_EXCL = 0x0001 ;
+/*
+ * This flag can be used with uv_fs_copyfile() to attempt to create a reflink.
+ * If copy-on-write is not supported, a fallback copy mechanism is used.
+ */
+enum UV_FS_COPYFILE_FICLONE = 0x0002 ;
+/*
+ * This flag can be used with uv_fs_copyfile() to attempt to create a reflink.
+ * If copy-on-write is not supported, an error is returned.
+ */
+enum UV_FS_COPYFILE_FICLONE_FORCE = 0x0004 ;
 int uv_fs_copyfile(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, inout(char)* new_path, int flags, uv_fs_cb cb);
 int uv_fs_mkdir(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int mode, uv_fs_cb cb);
 int uv_fs_mkdtemp(uv_loop_t* loop, uv_fs_t* req, inout(char)* tpl, uv_fs_cb cb);
@@ -1103,7 +1112,11 @@ struct uv_loop_s {
 	/* Loop reference counting. */
 	uint active_handles;
 	void*[2] handle_queue;
-	void*[2] active_reqs;
+	union active_reqs_s {
+		void*[2] unused;
+		uint count;
+	};
+	active_reqs_s active_reqs;
 	/* Internal flag to signal loop stop. */
 	uint stop_flag;
 	mixin UV_LOOP_PRIVATE_FIELDS;
