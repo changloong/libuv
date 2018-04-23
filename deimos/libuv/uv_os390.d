@@ -25,7 +25,7 @@ nothrow:
  * IN THE SOFTWARE.
  */
 /* UV_MVS_H */
-alias UV_PLATFORM_SEM_T = int ;
+alias UV_PLATFORM_SEM_T = long ;
 template UV_PLATFORM_LOOP_FIELDS() {
 	void* ep;
 }
