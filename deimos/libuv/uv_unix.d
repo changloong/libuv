@@ -61,7 +61,7 @@ static if( isLinuxOS ) {
 	package import deimos.libuv.uv_posix;
 }
 package import deimos.libuv.pthread_barrier;
-enum NI_MAXHOST = 1025;
+version( CRuntime_Musl ) { enum NI_MAXHOST = 255;} else {enum NI_MAXHOST = 1025;}
 enum NI_MAXSERV = 32;
 static if( isLinuxOS  || isAixOS || isSunOS ) {
 	template UV_IO_PRIVATE_PLATFORM_FIELDS() {};

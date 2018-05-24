@@ -7,6 +7,8 @@ package import core.stdc.stdio;
 package import core.stdc.stdint;
 
 version(Posix) {
+	private import core.sys.posix.config;
+	private import core.stdc.stdint;
 	public import core.sys.posix.netdb : addrinfo, sockaddr, sockaddr_storage, sockaddr_in, sockaddr_in6;
 	public import core.sys.posix.netinet.in_ : IPPROTO_TCP, IPPROTO_UDP;
 	public import core.sys.posix.sys.socket : AF_INET, AF_INET6, SOCK_STREAM;
@@ -14,8 +16,28 @@ version(Posix) {
 	package import core.sys.posix.termios;
 	package import core.sys.posix.dirent : dirent;
 	package import core.sys.posix.semaphore : sem_t;
-	package import core.sys.posix.net.if_ : IF_NAMESIZE ;
-	const UV_IF_NAMESIZE = IF_NAMESIZE + 1 ;
+	version( CRuntime_Musl ) {
+		struct pthread_barrier_t { 
+			void*[4] __p;
+		} 
+    		alias ubyte cc_t;
+    		alias uint  speed_t;   
+    		alias uint  tcflag_t;  
+		const NCCS = 32 ;
+		struct termios {
+        		tcflag_t c_iflag;
+        		tcflag_t c_oflag;
+        		tcflag_t c_cflag;
+        		tcflag_t c_lflag;
+        		cc_t 	c_line;
+        		cc_t[NCCS] 	c_cc;
+        		speed_t __c_ispeed;
+        		speed_t __c_ospeed;
+		};
+	} else {
+		package import core.sys.posix.net.if_ : IF_NAMESIZE ;
+		const UV_IF_NAMESIZE = IF_NAMESIZE + 1 ;
+	}
 } else {
 	const UV_IF_NAMESIZE = 16 + 1 ;
 }
