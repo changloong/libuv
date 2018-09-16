@@ -1,7 +1,7 @@
-module deimos.libuv.uv_aix;
-import deimos.libuv._d;
+module deimos.uv.aix;
+public import deimos.uv._d;
 version(AIX):
-extern(C) :
+extern(C):
 pure:
 nothrow:
 @nogc:

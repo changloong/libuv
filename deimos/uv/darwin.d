@@ -1,6 +1,7 @@
-module deimos.libuv.uv_threadpool;
-import deimos.libuv._d;
-extern(C) :
+module deimos.uv.darwin;
+public import deimos.uv._d;
+version(OSX):
+extern(C):
 pure:
 nothrow:
 @nogc:
@@ -24,14 +25,38 @@ nothrow:
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/*
- * This file is private to libuv. It provides common functionality to both
- * Windows and Unix backends.
- */
-/* UV_THREADPOOL_H_ */
-struct uv__work {
-	void function(uv__work* w) work;
-	void function(uv__work* w, int status) done;
-	uv_loop_s* loop;
-	void*[2] wq;
-};
+/* UV_DARWIN_H */
+static if( isMacOS ) {
+	/* include(mach/mach.h); */
+	/* include(mach/task.h); */
+	/* include(mach/semaphore.h); */
+	/* include(TargetConditionals.h); */
+	alias UV_PLATFORM_SEM_T = semaphore_t ;
+}
+template UV_IO_PRIVATE_PLATFORM_FIELDS() {
+	int rcount;
+	int wcount;
+}
+template UV_PLATFORM_LOOP_FIELDS() {
+	uv_thread_t cf_thread;
+	void* _cf_reserved;
+	void* cf_state;
+	uv_mutex_t cf_mutex;
+	uv_sem_t cf_sem;
+	void*[2] cf_signals;
+}
+template UV_PLATFORM_FS_EVENT_FIELDS() {
+	uv__io_t event_watcher;
+	char* realpath;
+	int realpath_len;
+	int cf_flags;
+	uv_async_t* cf_cb;
+	void*[2] cf_events;
+	void*[2] cf_member;
+	int cf_error;
+	uv_mutex_t cf_mutex;
+}
+template UV_STREAM_PRIVATE_PLATFORM_FIELDS() {
+	void* select;
+}
+enum UV_HAVE_KQUEUE = 1 ;

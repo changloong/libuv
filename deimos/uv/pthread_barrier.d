@@ -1,7 +1,7 @@
-module deimos.libuv.pthread_barrier;
-import deimos.libuv._d;
+module deimos.uv.pthread_barrier;
+public import deimos.uv._d;
 static if( isAndroidOS || isMacOS ) :
-extern(C) :
+extern(C):
 pure:
 nothrow:
 @nogc:
@@ -21,7 +21,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 /* _UV_PTHREAD_BARRIER_ */
-/* include(errno.h); */
+package import deimos.uv.errno;
 /* include(pthread.h); */
 static if( isOS390 ) {
 	/* include(semaphore.h); */

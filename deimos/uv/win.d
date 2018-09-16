@@ -1,7 +1,7 @@
-module deimos.libuv.uv_win;
-import deimos.libuv._d;
+module deimos.uv.win;
+public import deimos.uv._d;
 version(Windows):
-extern(C) :
+extern(C):
 pure:
 nothrow:
 @nogc:
@@ -43,8 +43,8 @@ enum LOCALE_INVARIANT = 0x007f;
 /* include(signal.h); */
 /* include(fcntl.h); */
 /* include(sys/stat.h); */
-/* include(tree.h); */
-package import deimos.libuv.uv_threadpool;
+/* include(uv/tree.h); */
+package import deimos.uv.threadpool; /* include(uv/threadpool.h); */ 
 enum MAX_PIPENAME_LEN = 256 ;
 /* Additional signals supported by uv_signal and or uv_kill. The CRT defines
  * the following signals already:
@@ -64,8 +64,8 @@ enum MAX_PIPENAME_LEN = 256 ;
 enum S_IFLNK = 0xA000;
 enum SIGHUP = 1 ;
 enum SIGKILL = 9 ;
-/* The CRT defines SIGABRT_COMPAT as 6, which equals SIGABRT on many */
-/* unix-like platforms. However MinGW doesn't define it, so we do. */
+/* The CRT defines SIGABRT_COMPAT as 6, which equals SIGABRT on many unix-like
+ * platforms. However MinGW doesn't define it, so we do. */
 enum SIGWINCH = 28 ;
 /*
  * Guids and typedefs for winsock extension functions
@@ -130,13 +130,14 @@ alias uv_sem_t = HANDLE ;
 alias uv_mutex_t = CRITICAL_SECTION ;
 union uv_cond_t {
 	CONDITION_VARIABLE cond_var;
-	struct fallback_s {
+	struct unused__s {
 		uint waiters_count;
 		CRITICAL_SECTION waiters_count_lock;
 		HANDLE signal_event;
 		HANDLE broadcast_event;
 	};
-	fallback_s fallback;
+	unused__s unused_;
+	/* TODO: retained for ABI compatibility; remove me in v2.x. */
 };
 union uv_rwlock_t {
 	struct state__s {
@@ -244,7 +245,7 @@ template UV_REQ_PRIVATE_FIELDS() {
 	uv_req_s* next_req;
 }
 template UV_WRITE_PRIVATE_FIELDS() {
-	int ipc_header;
+	int coalesced;
 	uv_buf_t write_buffer;
 	HANDLE event_handle;
 	HANDLE wait_handle;
@@ -343,20 +344,21 @@ template uv_pipe_server_fields() {
 }
 template uv_pipe_connection_fields() {
 	uv_timer_t* eof_timer;
-	uv_write_t ipc_header_write_req;
-	int ipc_pid;
-	uint64_t remaining_ipc_rawdata_bytes;
-	struct pending_ipc_info_s {
-		void*[2] queue;
-		int queue_len;
+	uv_write_t dummy;
+	DWORD ipc_remote_pid;
+	union ipc_data_frame_s {
+		uint32_t payload_remaining;
+		uint64_t dummy;
 	};
-	pending_ipc_info_s pending_ipc_info;
+	ipc_data_frame_s ipc_data_frame;
+	void*[2] ipc_xfer_queue;
+	int ipc_xfer_queue_length;
 	uv_write_t* non_overlapped_writes_tail;
-	uv_mutex_t readfile_mutex;
-	HANDLE readfile_thread;
+	CRITICAL_SECTION readfile_thread_lock;
+	HANDLE readfile_thread_handle;
 }
-/* TODO: put the parser states in an union - TTY handles are always */
-/* half-duplex so read-state can safely overlap write-state. */
+/* TODO: put the parser states in an union - TTY handles are always half-duplex
+ * so read-state can safely overlap write-state. */
 template UV_PIPE_PRIVATE_FIELDS() {
 	HANDLE handle;
 	WCHAR* name;

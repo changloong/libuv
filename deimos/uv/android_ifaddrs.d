@@ -1,7 +1,7 @@
-module deimos.libuv.android_ifaddrs;
-import deimos.libuv._d;
+module deimos.uv.android_ifaddrs;
+public import deimos.uv._d;
 version(Android):
-extern(C) :
+extern(C):
 pure:
 nothrow:
 @nogc:

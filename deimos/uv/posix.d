@@ -1,11 +1,10 @@
-module deimos.libuv.uv_linux;
-import deimos.libuv._d;
-version(linux):
-extern(C) :
+module deimos.uv.posix;
+public import deimos.uv._d;
+extern(C):
 pure:
 nothrow:
 @nogc:
-/* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
+/* Copyright libuv project contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -25,13 +24,10 @@ nothrow:
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* UV_LINUX_H */
+/* UV_POSIX_H */
 template UV_PLATFORM_LOOP_FIELDS() {
-	uv__io_t inotify_read_watcher;
-	void* inotify_watchers;
-	int inotify_fd;
-}
-template UV_PLATFORM_FS_EVENT_FIELDS() {
-	void*[2] watchers;
-	int wd;
+	pollfd* poll_fds;
+	size_t poll_fds_used;
+	size_t poll_fds_size;
+	ubyte poll_fds_iterating;
 }

@@ -1,7 +1,7 @@
-module deimos.libuv.uv_unix;
-import deimos.libuv._d;
+module deimos.uv.unix;
+public import deimos.uv._d;
 version(Posix):
-extern(C) :
+extern(C):
 pure:
 nothrow:
 @nogc:
@@ -42,26 +42,26 @@ static if( isOS390 ) {
 }
 /* include(pthread.h); */
 /* include(signal.h); */
-package import deimos.libuv.uv_threadpool;
+package import deimos.uv.threadpool; /* include(uv/threadpool.h); */ 
 static if( isLinuxOS ) {
-	package import deimos.libuv.uv_linux;
+	package import deimos.uv.linux; /* include(uv/linux.h); */ 
 } else static if( isOS390 ) {
-	package import deimos.libuv.uv_os390;
+	package import deimos.uv.os390; /* include(uv/os390.h); */ 
 } else static if( isOS400 ) {
-	package import deimos.libuv.uv_posix;
+	package import deimos.uv.posix; /* include(uv/posix.h); */ 
 } else static if( isAixOS ) {
-	package import deimos.libuv.uv_aix;
+	package import deimos.uv.aix; /* include(uv/aix.h); */ 
 } else static if( isSunOS ) {
-	package import deimos.libuv.uv_sunos;
+	package import deimos.uv.sunos; /* include(uv/sunos.h); */ 
 } else static if( isMacOS ) {
-	package import deimos.libuv.uv_darwin;
+	package import deimos.uv.darwin; /* include(uv/darwin.h); */ 
 } else static if( isBsdOS ) {
-	package import deimos.libuv.uv_bsd;
+	package import deimos.uv.bsd; /* include(uv/bsd.h); */ 
 } else static if( isCygWin ) {
-	package import deimos.libuv.uv_posix;
+	package import deimos.uv.posix; /* include(uv/posix.h); */ 
 }
-package import deimos.libuv.pthread_barrier;
-version( CRuntime_Musl ) { enum NI_MAXHOST = 255;} else {enum NI_MAXHOST = 1025;}
+package import deimos.uv.pthread_barrier; /* include(uv/pthread-barrier.h); */ 
+enum NI_MAXHOST = 1025;
 enum NI_MAXSERV = 32;
 static if( isLinuxOS  || isAixOS || isSunOS ) {
 	template UV_IO_PRIVATE_PLATFORM_FIELDS() {};

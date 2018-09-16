@@ -1,5 +1,5 @@
-module deimos.libuv.uv_errno;
-import deimos.libuv._d;
+module deimos.uv.errno;
+import deimos.uv._d;
 import core.stdc.errno;
 
 version(OSX) {
@@ -197,4 +197,10 @@ version( linux ) {
 	enum UV__EHOSTDOWN = -64;
 } else {
 	enum UV__EHOSTDOWN = -4031;
+}
+
+version( linux ) {
+	enum UV__EFTYPE = -79 ;
+} else {
+	enum UV__EFTYPE = -4028;
 }

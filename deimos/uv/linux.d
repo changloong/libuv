@@ -1,7 +1,7 @@
-module deimos.libuv.uv_darwin;
-import deimos.libuv._d;
-version(OSX):
-extern(C) :
+module deimos.uv.linux;
+public import deimos.uv._d;
+version(linux):
+extern(C):
 pure:
 nothrow:
 @nogc:
@@ -25,38 +25,13 @@ nothrow:
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* UV_DARWIN_H */
-static if( isMacOS ) {
-	/* include(mach/mach.h); */
-	/* include(mach/task.h); */
-	/* include(mach/semaphore.h); */
-	/* include(TargetConditionals.h); */
-	alias UV_PLATFORM_SEM_T = semaphore_t ;
-}
-template UV_IO_PRIVATE_PLATFORM_FIELDS() {
-	int rcount;
-	int wcount;
-}
+/* UV_LINUX_H */
 template UV_PLATFORM_LOOP_FIELDS() {
-	uv_thread_t cf_thread;
-	void* _cf_reserved;
-	void* cf_state;
-	uv_mutex_t cf_mutex;
-	uv_sem_t cf_sem;
-	void*[2] cf_signals;
+	uv__io_t inotify_read_watcher;
+	void* inotify_watchers;
+	int inotify_fd;
 }
 template UV_PLATFORM_FS_EVENT_FIELDS() {
-	uv__io_t event_watcher;
-	char* realpath;
-	int realpath_len;
-	int cf_flags;
-	uv_async_t* cf_cb;
-	void*[2] cf_events;
-	void*[2] cf_member;
-	int cf_error;
-	uv_mutex_t cf_mutex;
+	void*[2] watchers;
+	int wd;
 }
-template UV_STREAM_PRIVATE_PLATFORM_FIELDS() {
-	void* select;
-}
-enum UV_HAVE_KQUEUE = 1 ;

@@ -1,6 +1,6 @@
-module deimos.libuv.uv;
-import deimos.libuv._d;
-extern(C) :
+module deimos.uv;
+public import deimos.uv._d;
+extern(C):
 pure:
 nothrow:
 @nogc:
@@ -33,14 +33,14 @@ static if( isWindowsOS ) {
 } else static if( isGnuC ) {
 } else {
 }
-package import deimos.libuv.uv_errno;
-/* include(uv-version.h); */
-/* include(stddef.h); */
-/* include(stdio.h); */
+package import deimos.uv.errno; /* include(uv/errno.h); */ 
+/* include(uv/version.h); */
+public import core.stdc.stdint; /* include(stddef.h); */ 
+public import core.stdc.stdio; /* include(stdio.h); */ 
 static if( isWindowsOS ) {
-	package import deimos.libuv.uv_win;
+	package import deimos.uv.win; /* include(uv/win.h); */ 
 } else {
-	package import deimos.libuv.uv_unix;
+	package import deimos.uv.unix; /* include(uv/unix.h); */ 
 }
 /* Expand this list if necessary. */
 enum uv_errno_t {
@@ -122,6 +122,7 @@ enum uv_errno_t {
 	UV_EHOSTDOWN = UV__EHOSTDOWN ,
 	UV_EREMOTEIO = UV__EREMOTEIO ,
 	UV_ENOTTY = UV__ENOTTY ,
+	UV_EFTYPE = UV__EFTYPE ,
 	UV_ERRNO_MAX = UV__EOF - 1
 };
 enum uv_handle_type {
@@ -379,6 +380,7 @@ struct uv_write_s {
 	mixin UV_REQ_FIELDS;
 	uv_write_cb cb;
 	uv_stream_t* send_handle;
+	/* TODO: make private and unix-only in v2.x. */
 	uv_stream_t* handle;
 	mixin UV_WRITE_PRIVATE_FIELDS;
 };
@@ -621,7 +623,12 @@ enum uv_stdio_flags {
 	   * flags may be specified to create a duplex data stream.
 	   */
 	UV_READABLE_PIPE = 0x10 ,
-	UV_WRITABLE_PIPE = 0x20 
+	UV_WRITABLE_PIPE = 0x20 ,
+	/*
+	   * Open the child pipe handle in overlapped mode on Windows.
+	   * On Unix it is silently ignored.
+	   */
+	UV_OVERLAPPED_PIPE = 0x40 
 };
 struct uv_stdio_container_s {
 	uv_stdio_flags flags;
@@ -741,17 +748,17 @@ struct uv_work_s {
 };
 int uv_queue_work(uv_loop_t* loop, uv_work_t* req, uv_work_cb work_cb, uv_after_work_cb after_work_cb);
 int uv_cancel(uv_req_t* req);
+struct uv_cpu_times_s {
+	uint64_t user;
+	uint64_t nice;
+	uint64_t sys;
+	uint64_t idle;
+	uint64_t irq;
+};
 struct uv_cpu_info_s {
 	char* model;
 	int speed;
-	struct cpu_times_s {
-		uint64_t user;
-		uint64_t nice;
-		uint64_t sys;
-		uint64_t idle;
-		uint64_t irq;
-	};
-	cpu_times_s cpu_times;
+	uv_cpu_times_s cpu_times;
 };
 struct uv_interface_address_s {
 	char* name;
@@ -878,6 +885,7 @@ enum uv_fs_type {
 	UV_FS_READLINK,
 	UV_FS_CHOWN,
 	UV_FS_FCHOWN,
+	UV_FS_LCHOWN,
 	UV_FS_REALPATH,
 	UV_FS_COPYFILE
 };
@@ -955,6 +963,7 @@ int uv_fs_realpath(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb
 int uv_fs_fchmod(uv_loop_t* loop, uv_fs_t* req, uv_file file, int mode, uv_fs_cb cb);
 int uv_fs_chown(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_uid_t uid, uv_gid_t gid, uv_fs_cb cb);
 int uv_fs_fchown(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_uid_t uid, uv_gid_t gid, uv_fs_cb cb);
+int uv_fs_lchown(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_uid_t uid, uv_gid_t gid, uv_fs_cb cb);
 enum uv_fs_event {
 	UV_RENAME = 1 ,
 	UV_CHANGE = 2 

@@ -1,10 +1,3 @@
-module deimos.libuv.uv_sunos;
-import deimos.libuv._d;
-version(Solaris):
-extern(C) :
-pure:
-nothrow:
-@nogc:
 /* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,19 +18,26 @@ nothrow:
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* UV_SUNOS_H */
-/* include(sys/port.h); */
-/* include(port.h); */
-/* For the sake of convenience and reduced #ifdef-ery in src/unix/sunos.c,
- * add the fs_event fields even when this version of SunOS doesn't support
- * file watching.
+
+#ifndef UV_VERSION_H
+#define UV_VERSION_H
+
+ /*
+ * Versions with the same major number are ABI stable. API is allowed to
+ * evolve between minor releases, but only in a backwards compatible way.
+ * Make sure you update the -soname directives in configure.ac
+ * and uv.gyp whenever you bump UV_VERSION_MAJOR or UV_VERSION_MINOR (but
+ * not UV_VERSION_PATCH.)
  */
-template UV_PLATFORM_LOOP_FIELDS() {
-	uv__io_t fs_event_watcher;
-	int fs_fd;
-}
-template UV_PLATFORM_FS_EVENT_FIELDS() {
-	file_obj_t fo;
-	int fd;
-}
-/* defined(PORT_SOURCE_FILE) */
+
+#define UV_VERSION_MAJOR 1
+#define UV_VERSION_MINOR 21
+#define UV_VERSION_PATCH 0
+#define UV_VERSION_IS_RELEASE 1
+#define UV_VERSION_SUFFIX ""
+
+#define UV_VERSION_HEX  ((UV_VERSION_MAJOR << 16) | \
+                         (UV_VERSION_MINOR <<  8) | \
+                         (UV_VERSION_PATCH))
+
+#endif /* UV_VERSION_H */

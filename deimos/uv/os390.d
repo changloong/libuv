@@ -1,11 +1,10 @@
-module deimos.libuv.uv_bsd;
-import deimos.libuv._d;
-version(FreeBSD):
-extern(C) :
+module deimos.uv.os390;
+public import deimos.uv._d;
+extern(C):
 pure:
 nothrow:
 @nogc:
-/* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
+/* Copyright libuv project contributors. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -25,12 +24,11 @@ nothrow:
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* UV_BSD_H */
+/* UV_MVS_H */
+alias UV_PLATFORM_SEM_T = long ;
+template UV_PLATFORM_LOOP_FIELDS() {
+	void* ep;
+}
 template UV_PLATFORM_FS_EVENT_FIELDS() {
-	uv__io_t event_watcher;
+	char[8] rfis_rftok;
 }
-template UV_IO_PRIVATE_PLATFORM_FIELDS() {
-	int rcount;
-	int wcount;
-}
-enum UV_HAVE_KQUEUE = 1 ;
