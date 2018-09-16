@@ -190,7 +190,6 @@ alias UV__DT_SOCKET = UV_DIRENT_SOCKET ;
 alias UV__DT_CHAR = UV_DIRENT_CHAR ;
 /* Platform-specific definitions for uv_dlopen support. */
 alias UV__DT_BLOCK = UV_DIRENT_BLOCK ;
-alias uv_timer_tree_s = RB_HEAD!(uv_timer_s);
 struct uv_lib_t {
 	HMODULE handle;
 	char* errmsg;
@@ -205,8 +204,8 @@ template UV_LOOP_PRIVATE_FIELDS() {
 	uv_req_t* pending_reqs_tail;
 	/* Head of a single-linked list of closed handles */
 	uv_handle_t* endgame_handles;
-	/* The head of the timers tree */
-	uv_timer_tree_s timers;
+	/* TODO(bnoordhuis) Stop heap-allocating |timer_heap| in libuv v2.x. */
+	void* timer_heap;
 	/* Lists of active loop (prepare / check / idle) watchers */
 	uv_prepare_t* prepare_handles;
 	uv_check_t* check_handles;
@@ -425,8 +424,9 @@ template UV_POLL_PRIVATE_FIELDS() {
 	ubyte events;
 }
 template UV_TIMER_PRIVATE_FIELDS() {
-	RB_ENTRY!(uv_timer_s) tree_entry;
-	uint64_t due;
+	void*[3] heap_node;
+	int unused;
+	uint64_t timeout;
 	uint64_t repeat;
 	uint64_t start_id;
 	uv_timer_cb timer_cb;

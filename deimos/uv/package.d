@@ -287,7 +287,9 @@ enum uv_membership {
 };
 int uv_translate_sys_error(int sys_errno);
 const(char)* uv_strerror(int err);
+char* uv_strerror_r(int err, char* buf, size_t buflen);
 const(char)* uv_err_name(int err);
+char* uv_err_name_r(int err, char* buf, size_t buflen);
 template UV_REQ_FIELDS() {
 	void* data;
 	/* read-only */
@@ -885,9 +887,9 @@ enum uv_fs_type {
 	UV_FS_READLINK,
 	UV_FS_CHOWN,
 	UV_FS_FCHOWN,
-	UV_FS_LCHOWN,
 	UV_FS_REALPATH,
-	UV_FS_COPYFILE
+	UV_FS_COPYFILE,
+	UV_FS_LCHOWN
 };
 /* uv_fs_t is a subclass of uv_req_t. */
 struct uv_fs_s {

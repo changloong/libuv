@@ -1,4 +1,4 @@
 
 # libuv D interface
 
-Library version: v1.21.0
+Library version: v1.22.0
