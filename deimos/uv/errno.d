@@ -200,7 +200,7 @@ version( linux ) {
 }
 
 version( linux ) {
-	enum UV__EFTYPE = -79 ;
+	enum UV__EFTYPE = EFTYPE ;
 } else {
 	enum UV__EFTYPE = -4028;
 }

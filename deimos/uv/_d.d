@@ -113,9 +113,14 @@ version(linux) {
 
 version(OSX) {
 	enum isMacOS	= true ;
+	enum hasPTHREAD_BARRIER = false ;
 	package import core.sys.osx.mach.semaphore;
+	struct pthread_barrier_t {
+		void* data;
+	}
 } else {
 	enum isMacOS	= false ;
+	enum hasPTHREAD_BARRIER = true ;
 }
 
 version(Solaris) {
@@ -138,6 +143,24 @@ version(AIXOS) {
 
 version(Android) {
 	enum isAndroidOS	= true ;
+	enum EFTYPE = 79;
+	alias ifa_dstaddr	= sockaddr*;
+	private {
+		alias ubyte cc_t;
+		alias uint  speed_t;
+		alias uint  tcflag_t;
+		enum NCCS   = 8;
+	}
+	struct termios {
+		tcflag_t   c_iflag;
+		tcflag_t   c_oflag;
+		tcflag_t   c_cflag;
+		tcflag_t   c_lflag;
+		cc_t       c_line;
+		cc_t[NCCS] c_cc;
+		speed_t    c_ispeed;
+		speed_t    c_ospeed;
+	}
 } else {
 	enum isAndroidOS	= false ;
 }

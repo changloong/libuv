@@ -60,7 +60,6 @@ static if( isLinuxOS ) {
 } else static if( isCygWin ) {
 	package import deimos.uv.posix; /* include(uv/posix.h); */ 
 }
-package import deimos.uv.pthread_barrier; /* include(uv/pthread-barrier.h); */ 
 enum NI_MAXHOST = 1025;
 enum NI_MAXSERV = 32;
 static if( isLinuxOS  || isAixOS || isSunOS ) {
@@ -104,7 +103,26 @@ alias uv_rwlock_t = pthread_rwlock_t ;
 alias uv_sem_t = UV_PLATFORM_SEM_T ;
 alias uv_cond_t = pthread_cond_t ;
 alias uv_key_t = pthread_key_t ;
+/* Note: guard clauses should match uv_barrier_init's in src/unix/thread.c. */
+static if( isAixOS || !hasPTHREAD_BARRIER ) {
+	/* TODO(bnoordhuis) Merge into uv_barrier_t in v2. */
+	struct _uv_barrier {
+		uv_mutex_t mutex;
+		uv_cond_t cond;
+		uint threshold;
+		uint in_;
+		uint out_;
+	};
+	struct uv_barrier_t {
+		_uv_barrier* b;
+		static if( hasPTHREAD_BARRIER ) {
+			/* TODO(bnoordhuis) Remove padding in v2. */
+			char[pthread_barrier_t.sizeof-(_uv_barrier*).sizeof] pad;
+		}
+	};
+} else {
 alias uv_barrier_t = pthread_barrier_t ;
+}
 /* Platform-specific definitions for uv_spawn support. */
 alias uv_gid_t = gid_t ;
 alias uv_uid_t = uid_t ;
