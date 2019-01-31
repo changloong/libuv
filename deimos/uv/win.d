@@ -64,9 +64,10 @@ enum MAX_PIPENAME_LEN = 256 ;
 enum S_IFLNK = 0xA000;
 enum SIGHUP = 1 ;
 enum SIGKILL = 9 ;
+/* Redefine NSIG to take SIGWINCH into consideration */
+enum SIGWINCH = 28 ;
 /* The CRT defines SIGABRT_COMPAT as 6, which equals SIGABRT on many unix-like
  * platforms. However MinGW doesn't define it, so we do. */
-enum SIGWINCH = 28 ;
 /*
  * Guids and typedefs for winsock extension functions
  * Mingw32 doesn't have these :-(

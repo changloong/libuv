@@ -104,7 +104,7 @@ alias uv_sem_t = UV_PLATFORM_SEM_T ;
 alias uv_cond_t = pthread_cond_t ;
 alias uv_key_t = pthread_key_t ;
 /* Note: guard clauses should match uv_barrier_init's in src/unix/thread.c. */
-static if( isAixOS || !hasPTHREAD_BARRIER ) {
+static if( isAixOS ) {
 	/* TODO(bnoordhuis) Merge into uv_barrier_t in v2. */
 	struct _uv_barrier {
 		uv_mutex_t mutex;
