@@ -193,6 +193,7 @@ alias uv_cpu_info_t = uv_cpu_info_s ;
 alias uv_interface_address_t = uv_interface_address_s ;
 alias uv_dirent_t = uv_dirent_s ;
 alias uv_passwd_t = uv_passwd_s ;
+alias uv_utsname_t = uv_utsname_s ;
 enum uv_loop_option {
 	UV_LOOP_BLOCK_SIGNAL
 };
@@ -724,13 +725,13 @@ enum uv_process_flags {
 	   */
 	UV_PROCESS_WINDOWS_HIDE = ( 1 << 4 ),
 	/*
-	   * Hide the subprocess console window that would normally be created. This 
+	   * Hide the subprocess console window that would normally be created. This
 	   * option is only meaningful on Windows systems. On Unix it is silently
 	   * ignored.
 	   */
 	UV_PROCESS_WINDOWS_HIDE_CONSOLE = ( 1 << 5 ),
 	/*
-	   * Hide the subprocess GUI window that would normally be created. This 
+	   * Hide the subprocess GUI window that would normally be created. This
 	   * option is only meaningful on Windows systems. On Unix it is silently
 	   * ignored.
 	   */
@@ -794,6 +795,15 @@ struct uv_passwd_s {
 	ptrdiff_t gid;
 	char* shell;
 	char* homedir;
+};
+struct uv_utsname_s {
+	char[256] sysname;
+	char[256] release;
+	char[256] _version;
+	char[256] machine;
+	/* This struct does not contain the nodename and domainname fields present in
+	     the utsname type. domainname is a GNU extension. Both fields are referred
+	     to as meaningless in the docs. */
 };
 enum uv_dirent_type_t {
 	UV_DIRENT_UNKNOWN,
@@ -877,6 +887,7 @@ int uv_os_getenv(inout(char)* name, char* buffer, size_t* size);
 int uv_os_setenv(inout(char)* name, inout(char)* value);
 int uv_os_unsetenv(inout(char)* name);
 int uv_os_gethostname(char* buffer, size_t* size);
+int uv_os_uname(uv_utsname_t* buffer);
 enum uv_fs_type {
 	UV_FS_UNKNOWN = - 1,
 	UV_FS_CUSTOM,
