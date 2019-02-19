@@ -886,6 +886,12 @@ void uv_free_interface_addresses(uv_interface_address_t* addresses, int count);
 int uv_os_getenv(inout(char)* name, char* buffer, size_t* size);
 int uv_os_setenv(inout(char)* name, inout(char)* value);
 int uv_os_unsetenv(inout(char)* name);
+/*
+    Fallback for the maximum hostname size, including the null terminator. The
+    Windows gethostname() documentation states that 256 bytes will always be
+    large enough to hold the null-terminated hostname.
+ */
+enum UV_MAXHOSTNAMESIZE = 256 ;
 int uv_os_gethostname(char* buffer, size_t* size);
 int uv_os_uname(uv_utsname_t* buffer);
 enum uv_fs_type {
@@ -1115,6 +1121,17 @@ void* uv_key_get(uv_key_t* key);
 void uv_key_set(uv_key_t* key, void* value);
 alias uv_thread_cb = ExternC!(void function(void* arg));
 int uv_thread_create(uv_thread_t* tid, uv_thread_cb entry, void* arg);
+enum uv_thread_create_flags {
+	UV_THREAD_NO_FLAGS = 0x00 ,
+	UV_THREAD_HAS_STACK_SIZE = 0x01 
+};
+struct uv_thread_options_s {
+	uint flags;
+	size_t stack_size;
+	/* More fields may be added at any time. */
+};
+alias uv_thread_options_t = uv_thread_options_s ;
+int uv_thread_create_ex(uv_thread_t* tid, inout(uv_thread_options_t)* params, uv_thread_cb entry, void* arg);
 uv_thread_t uv_thread_self();
 int uv_thread_join(uv_thread_t* tid);
 int uv_thread_equal(inout(uv_thread_t)* t1, inout(uv_thread_t)* t2);

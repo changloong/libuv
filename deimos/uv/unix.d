@@ -35,10 +35,13 @@ nothrow:
 /* include(netinet/tcp.h); */
 /* include(arpa/inet.h); */
 /* include(netdb.h); */
+/* MAXHOSTNAMELEN on Solaris */
 /* include(termios.h); */
 /* include(pwd.h); */
 static if( isOS390 ) {
 	/* include(semaphore.h); */
+	/* include(sys/param.h); */
+	/* MAXHOSTNAMELEN on Linux and the BSDs */
 }
 /* include(pthread.h); */
 /* include(signal.h); */
