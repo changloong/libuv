@@ -9,12 +9,9 @@
 ```d
 import core.stdc.stdio;
 
-import dvector;
-import stringnogc;
-
 import deimos.uv;
 
-__gshared static uv_thread_t thread;
+static uv_thread_t thread;
 
 @nogc nothrow:
 
