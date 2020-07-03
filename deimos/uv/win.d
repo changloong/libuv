@@ -182,6 +182,11 @@ struct uv__dirent_s {
 	char[1] d_name;
 };
 alias uv__dirent_t = uv__dirent_s ;
+template UV_DIR_PRIVATE_FIELDS() {
+	HANDLE dir_handle;
+	WIN32_FIND_DATAW find_data;
+	BOOL need_find_call;
+}
 template HAVE_DIRENT_TYPES() {};
 alias UV__DT_DIR = UV_DIRENT_DIR ;
 alias UV__DT_FILE = UV_DIRENT_FILE ;
@@ -399,7 +404,7 @@ template UV_TTY_PRIVATE_FIELDS() {
 			/* eol conversion state */
 			ubyte previous_eol;
 			/* ansi parser state */
-			ubyte ansi_parser_state;
+			ushort ansi_parser_state;
 			ubyte ansi_csi_argc;
 			ushort[4] ansi_csi_argv;
 			COORD saved_position;
@@ -549,6 +554,7 @@ enum X_OK = 1;
 alias UV_FS_O_APPEND = _O_APPEND ;
 alias UV_FS_O_CREAT = _O_CREAT ;
 alias UV_FS_O_EXCL = _O_EXCL ;
+enum UV_FS_O_FILEMAP = 0x20000000 ;
 alias UV_FS_O_RANDOM = _O_RANDOM ;
 alias UV_FS_O_RDONLY = _O_RDONLY ;
 alias UV_FS_O_RDWR = _O_RDWR ;

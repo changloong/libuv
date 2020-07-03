@@ -1,206 +1,79 @@
 module deimos.uv.errno;
-import deimos.uv._d;
-import core.stdc.errno;
 
-version(OSX) {
-	private enum {
-		ECHARSET = 4080 ,
-		ENONET = 4056 , 
-		ESHUTDOWN = 4042 , 
-		EREMOTEIO =	4030 ,
-	}
-}
-version(linux) {
-	private enum {
-		ECHARSET = 4080 ,
-	}
-}
+version (OSX)
+	version = Darwin;
+else version (iOS)
+	version = Darwin;
+else version (TVOS)
+	version = Darwin;
+else version (WatchOS)
+	version = Darwin;
 
-extern(C) :
-pure:
-nothrow:
-@nogc:
-/* Copyright Joyent, Inc. and other Node contributors. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
-/* UV_ERRNO_H_ */
-/* include(errno.h); */
-enum UV__EOF = -4095;
-enum UV__UNKNOWN = -4094;
-enum UV__EAI_ADDRFAMILY = -3000;
-enum UV__EAI_AGAIN = -3001;
-enum UV__EAI_BADFLAGS = -3002;
-enum UV__EAI_CANCELED = -3003;
-enum UV__EAI_FAIL = -3004;
-enum UV__EAI_FAMILY = -3005;
-enum UV__EAI_MEMORY = -3006;
-enum UV__EAI_NODATA = -3007;
-enum UV__EAI_NONAME = -3008;
-enum UV__EAI_OVERFLOW = -3009;
-enum UV__EAI_SERVICE = -3010;
-enum UV__EAI_SOCKTYPE = -3011;
-enum UV__EAI_BADHINTS = -3013;
-enum UV__EAI_PROTOCOL = -3014;
-/* Only map to the system errno on non-Windows platforms. It's apparently
- * a fairly common practice for Windows programmers to redefine errno codes.
- */
-version(Windows) {
-	enum UV__E2BIG = -4093;
-	enum UV__EACCES = -4092;
-	enum UV__EADDRINUSE = -4091;
-	enum UV__EADDRNOTAVAIL = -4090;
-	enum UV__EAFNOSUPPORT = -4089;
-	enum UV__EAGAIN = -4088;
-	enum UV__EALREADY = -4084;
-	enum UV__EBADF = -4083;
-	enum UV__EBUSY = -4082;
-	enum UV__ECANCELED = -4081;
-	enum UV__ECHARSET = -4080;
-	enum UV__ECONNABORTED = -4079;
-	enum UV__ECONNREFUSED = -4078;
-	enum UV__ECONNRESET = -4077;
-	enum UV__EDESTADDRREQ = -4076;
-	enum UV__EEXIST = -4075;
-	enum UV__EFAULT = -4074;
-	enum UV__EHOSTUNREACH = -4073;
-	enum UV__EINTR = -4072;
-	enum UV__EINVAL = -4071;
-	enum UV__EIO = -4070;
-	enum UV__EISCONN = -4069;
-	enum UV__EISDIR = -4068;
-	enum UV__ELOOP = -4067;
-	enum UV__EMFILE = -4066;
-	enum UV__EMSGSIZE = -4065;
-	enum UV__ENAMETOOLONG = -4064;
-	enum UV__ENETDOWN = -4063;
-	enum UV__ENETUNREACH = -4062;
-	enum UV__ENFILE = -4061;
-	enum UV__ENOBUFS = -4060;
-	enum UV__ENODEV = -4059;
-	enum UV__ENOENT = -4058;
-	enum UV__ENOMEM = -4057;
-	enum UV__ENONET = -4056;
-	enum UV__ENOSPC = -4055;
-	enum UV__ENOSYS = -4054;
-	enum UV__ENOTCONN = -4053;
-	enum UV__ENOTDIR = -4052;
-	enum UV__ENOTEMPTY = -4051;
-	enum UV__ENOTSOCK = -4050;
-	enum UV__ENOTSUP = -4049;
-	enum UV__EPERM = -4048;
-	enum UV__EPIPE = -4047;
-	enum UV__EPROTO = -4046;
-	enum UV__EPROTONOSUPPORT = -4045;
-	enum UV__EPROTOTYPE = -4044;
-	enum UV__EROFS = -4043;
-	enum UV__ESHUTDOWN = -4042;
-	enum UV__ESPIPE = -4041;
-	enum UV__ESRCH = -4040;
-	enum UV__EREMOTEIO = -4030;
-	enum UV__ETIMEDOUT = -4039;
-	enum UV__ETXTBSY = -4038;
-	enum UV__EXDEV = -4037;
-	enum UV__EFBIG = -4036;
-	enum UV__ENOPROTOOPT = -4035;
-	enum UV__ERANGE = -4034;
-	enum UV__ENXIO = -4033;
-	enum UV__EMLINK = -4032;
-	enum UV__ENOTTY = -4029;
-} else {
-	enum UV__E2BIG = 0 - E2BIG;
-	enum UV__EACCES = 0 - EACCES;
-	enum UV__EADDRINUSE = 0 - EADDRINUSE;
-	enum UV__EADDRNOTAVAIL = 0 - EADDRNOTAVAIL;
-	enum UV__EAFNOSUPPORT = 0 - EAFNOSUPPORT;
-	enum UV__EAGAIN = 0 - EAGAIN;
-	enum UV__EALREADY = 0 - EALREADY;
-	enum UV__EBADF = 0 - EBADF;
-	enum UV__EBUSY = 0 - EBUSY;
-	enum UV__ECANCELED = 0 - ECANCELED;
-	enum UV__ECHARSET = 0 - ECHARSET;
-	enum UV__ECONNABORTED = 0 - ECONNABORTED;
-	enum UV__ECONNREFUSED = 0 - ECONNREFUSED;
-	enum UV__ECONNRESET = 0 - ECONNRESET;
-	enum UV__EDESTADDRREQ = 0 - EDESTADDRREQ;
-	enum UV__EEXIST = 0 - EEXIST;
-	enum UV__EFAULT = 0 - EFAULT;
-	enum UV__EHOSTUNREACH = 0 - EHOSTUNREACH;
-	enum UV__EINTR = 0 - EINTR;
-	enum UV__EINVAL = 0 - EINVAL;
-	enum UV__EIO = 0 - EIO;
-	enum UV__EISCONN = 0 - EISCONN;
-	enum UV__EISDIR = 0 - EISDIR;
-	enum UV__ELOOP = 0 - ELOOP;
-	enum UV__EMFILE = 0 - EMFILE;
-	enum UV__EMSGSIZE = 0 - EMSGSIZE;
-	enum UV__ENAMETOOLONG = 0 - ENAMETOOLONG;
-	enum UV__ENETDOWN = 0 - ENETDOWN;
-	enum UV__ENETUNREACH = 0 - ENETUNREACH;
-	enum UV__ENFILE = 0 - ENFILE;
-	enum UV__ENOBUFS = 0 - ENOBUFS;
-	enum UV__ENODEV = 0 - ENODEV;
-	enum UV__ENOENT = 0 - ENOENT;
-	enum UV__ENOMEM = 0 - ENOMEM;
-	enum UV__ENONET = 0 - ENONET;
-	enum UV__ENOSPC = 0 - ENOSPC;
-	enum UV__ENOSYS = 0 - ENOSYS;
-	enum UV__ENOTCONN = 0 - ENOTCONN;
-	enum UV__ENOTDIR = 0 - ENOTDIR;
-	enum UV__ENOTEMPTY = 0 - ENOTEMPTY;
-	enum UV__ENOTSOCK = 0 - ENOTSOCK;
-	enum UV__ENOTSUP = 0 - ENOTSUP;
-	enum UV__EPERM = 0 - EPERM;
-	enum UV__EPIPE = 0 - EPIPE;
-	enum UV__EPROTO = 0 - EPROTO;
-	enum UV__EPROTONOSUPPORT = 0 - EPROTONOSUPPORT;
-	enum UV__EPROTOTYPE = 0 - EPROTOTYPE;
-	enum UV__EROFS = 0 - EROFS;
-	enum UV__ESHUTDOWN = 0 - ESHUTDOWN;
-	enum UV__ESPIPE = 0 - ESPIPE;
-	enum UV__ESRCH = 0 - ESRCH;
-	enum UV__EREMOTEIO = 0 - EREMOTEIO;
-	enum UV__ETIMEDOUT = 0 - ETIMEDOUT;
-	enum UV__ETXTBSY = -0 - ETXTBSY;
-	enum UV__EXDEV = 0 - EXDEV;
-	enum UV__EFBIG = 0 - EFBIG;
-	enum UV__ENOPROTOOPT = 0 - ENOPROTOOPT;
-	enum UV__ERANGE = 0 - ERANGE;
-	enum UV__ENXIO = 0 - ENXIO;
-	enum UV__EMLINK = 0 - EMLINK;
-	enum UV__ENOTTY = 0 - ENOTTY;
-}
+version(linux) public import deimos.uv.errno_linux;
+version(Darwin) public import deimos.uv.errno_darwin;
+version(FreeBSD) public import deimos.uv.errno_bsd;
+version(Windows) public import deimos.uv.errno_win;
 
-/* EHOSTDOWN is not visible on BSD-like systems when _POSIX_C_SOURCE is
- * defined. Fortunately, its value is always 64 so it's possible albeit
- * icky to hard-code it.
- */
-version( linux ) {
-	enum UV__EHOSTDOWN = -EHOSTDOWN;
-} else static if( isMacOS || isBsdOS ) {
-	enum UV__EHOSTDOWN = -64;
-} else {
-	enum UV__EHOSTDOWN = -4031;
-}
+enum {
+  /* Used by all handles. */
+  UV_HANDLE_CLOSING                     = 0x00000001,
+  UV_HANDLE_CLOSED                      = 0x00000002,
+  UV_HANDLE_ACTIVE                      = 0x00000004,
+  UV_HANDLE_REF                         = 0x00000008,
+  UV_HANDLE_INTERNAL                    = 0x00000010,
+  UV_HANDLE_ENDGAME_QUEUED              = 0x00000020,
 
-version( linux ) {
-	enum UV__EFTYPE = EFTYPE ;
-} else {
-	enum UV__EFTYPE = -4028;
-}
+  /* Used by streams. */
+  UV_HANDLE_LISTENING                   = 0x00000040,
+  UV_HANDLE_CONNECTION                  = 0x00000080,
+  UV_HANDLE_SHUTTING                    = 0x00000100,
+  UV_HANDLE_SHUT                        = 0x00000200,
+  UV_HANDLE_READ_PARTIAL                = 0x00000400,
+  UV_HANDLE_READ_EOF                    = 0x00000800,
+
+  /* Used by streams and UDP handles. */
+  UV_HANDLE_READING                     = 0x00001000,
+  UV_HANDLE_BOUND                       = 0x00002000,
+  UV_HANDLE_READABLE                    = 0x00004000,
+  UV_HANDLE_WRITABLE                    = 0x00008000,
+  UV_HANDLE_READ_PENDING                = 0x00010000,
+  UV_HANDLE_SYNC_BYPASS_IOCP            = 0x00020000,
+  UV_HANDLE_ZERO_READ                   = 0x00040000,
+  UV_HANDLE_EMULATE_IOCP                = 0x00080000,
+  UV_HANDLE_BLOCKING_WRITES             = 0x00100000,
+  UV_HANDLE_CANCELLATION_PENDING        = 0x00200000,
+
+  /* Used by uv_tcp_t and uv_udp_t handles */
+  UV_HANDLE_IPV6                        = 0x00400000,
+
+  /* Only used by uv_tcp_t handles. */
+  UV_HANDLE_TCP_NODELAY                 = 0x01000000,
+  UV_HANDLE_TCP_KEEPALIVE               = 0x02000000,
+  UV_HANDLE_TCP_SINGLE_ACCEPT           = 0x04000000,
+  UV_HANDLE_TCP_ACCEPT_STATE_CHANGING   = 0x08000000,
+  UV_HANDLE_TCP_SOCKET_CLOSED           = 0x10000000,
+  UV_HANDLE_SHARED_TCP_SOCKET           = 0x20000000,
+  UV_HANDLE_TCP_FASTOPEN                = 0x40000000,
+
+  /* Only used by uv_udp_t handles. */
+  UV_HANDLE_UDP_PROCESSING              = 0x01000000,
+  UV_HANDLE_UDP_CONNECTED               = 0x02000000,
+
+  /* Only used by uv_pipe_t handles. */
+  UV_HANDLE_NON_OVERLAPPED_PIPE         = 0x01000000,
+  UV_HANDLE_PIPESERVER                  = 0x02000000,
+
+  /* Only used by uv_tty_t handles. */
+  UV_HANDLE_TTY_READABLE                = 0x01000000,
+  UV_HANDLE_TTY_RAW                     = 0x02000000,
+  UV_HANDLE_TTY_SAVED_POSITION          = 0x04000000,
+  UV_HANDLE_TTY_SAVED_ATTRIBUTES        = 0x08000000,
+
+  /* Only used by uv_signal_t handles. */
+  UV_SIGNAL_ONE_SHOT_DISPATCHED         = 0x01000000,
+  UV_SIGNAL_ONE_SHOT                    = 0x02000000,
+
+  /* Only used by uv_poll_t handles. */
+  UV_HANDLE_POLL_SLOW                   = 0x01000000
+};
+

@@ -28,15 +28,13 @@ nothrow:
 /* UV_H */
 static if( isWindowsOS ) {
 	/* Windows - set up dll import/export decorators. */
-	/* Building shared library. */
-	/* Building static library. */
 } else static if( isGnuC ) {
 } else {
 }
 package import deimos.uv.errno; /* include(uv/errno.h); */ 
 /* include(uv/version.h); */
 public import core.stdc.stdint; /* include(stddef.h); */ 
-public import core.stdc.stdio; /* include(stdio.h); */ 
+public import brt.core.stdc; /* include(stdio.h); */ 
 static if( isWindowsOS ) {
 	package import deimos.uv.win; /* include(uv/win.h); */ 
 } else {
@@ -123,6 +121,7 @@ enum uv_errno_t {
 	UV_EREMOTEIO = UV__EREMOTEIO ,
 	UV_ENOTTY = UV__ENOTTY ,
 	UV_EFTYPE = UV__EFTYPE ,
+	UV_EILSEQ = UV__EILSEQ ,
 	UV_ERRNO_MAX = UV__EOF - 1
 };
 enum uv_handle_type {
@@ -157,12 +156,14 @@ mixin( `enum uv_req_type {
 	UV_WORK ,
 	UV_GETADDRINFO ,
 	UV_GETNAMEINFO ,
+	UV_RANDOM ,
 	` ~ UV_REQ_TYPE_PRIVATE ~ ` 
 	UV_REQ_TYPE_MAX
 };` ) ; 
 /* Handle types. */
 alias uv_loop_t = uv_loop_s ;
 alias uv_handle_t = uv_handle_s ;
+alias uv_dir_t = uv_dir_s ;
 alias uv_stream_t = uv_stream_s ;
 alias uv_tcp_t = uv_tcp_s ;
 alias uv_udp_t = uv_udp_s ;
@@ -188,12 +189,15 @@ alias uv_connect_t = uv_connect_s ;
 alias uv_udp_send_t = uv_udp_send_s ;
 alias uv_fs_t = uv_fs_s ;
 alias uv_work_t = uv_work_s ;
+alias uv_random_t = uv_random_s ;
 /* None of the above. */
+alias uv_env_item_t = uv_env_item_s ;
 alias uv_cpu_info_t = uv_cpu_info_s ;
 alias uv_interface_address_t = uv_interface_address_s ;
 alias uv_dirent_t = uv_dirent_s ;
 alias uv_passwd_t = uv_passwd_s ;
 alias uv_utsname_t = uv_utsname_s ;
+alias uv_statfs_t = uv_statfs_s ;
 enum uv_loop_option {
 	UV_LOOP_BLOCK_SIGNAL
 };
@@ -208,6 +212,7 @@ alias uv_malloc_func = ExternC!(void* function(size_t size));
 alias uv_realloc_func = ExternC!(void* function(void* ptr, size_t size));
 alias uv_calloc_func = ExternC!(void* function(size_t count, size_t size));
 alias uv_free_func = ExternC!(void function(void* ptr));
+void uv_library_shutdown();
 int uv_replace_allocator(uv_malloc_func malloc_func, uv_realloc_func realloc_func, uv_calloc_func calloc_func, uv_free_func free_func);
 uv_loop_t* uv_default_loop();
 int uv_loop_init(uv_loop_t* loop);
@@ -257,6 +262,7 @@ alias uv_work_cb = ExternC!(void function(uv_work_t* req));
 alias uv_after_work_cb = ExternC!(void function(uv_work_t* req, int status));
 alias uv_getaddrinfo_cb = ExternC!(void function(uv_getaddrinfo_t* req, int status, addrinfo* res));
 alias uv_getnameinfo_cb = ExternC!(void function(uv_getnameinfo_t* req, int status, inout(char)* hostname, inout(char)* service));
+alias uv_random_cb = ExternC!(void function(uv_random_t* req, int status, void* buf, size_t buflen));
 struct uv_timespec_t {
 	ptrdiff_t tv_sec;
 	ptrdiff_t tv_nsec;
@@ -414,6 +420,7 @@ enum uv_tcp_flags {
 int uv_tcp_bind(uv_tcp_t* handle, inout(sockaddr)* addr, uint flags);
 int uv_tcp_getsockname(inout(uv_tcp_t)* handle, sockaddr* name, int* namelen);
 int uv_tcp_getpeername(inout(uv_tcp_t)* handle, sockaddr* name, int* namelen);
+int uv_tcp_close_reset(uv_tcp_t* handle, uv_close_cb close_cb);
 int uv_tcp_connect(uv_connect_t* req, uv_tcp_t* handle, inout(sockaddr)* addr, uv_connect_cb cb);
 /* uv_connect_t is a subclass of uv_req_t. */
 struct uv_connect_s {
@@ -441,7 +448,16 @@ enum uv_udp_flags {
 	   * (provided they all set the flag) but only the last one to bind will receive
 	   * any traffic, in effect "stealing" the port from the previous listener.
 	   */
-	UV_UDP_REUSEADDR = 4 
+	UV_UDP_REUSEADDR = 4 ,
+	/*
+	   * Indicates that the message was received by recvmmsg, so the buffer provided
+	   * must not be freed by the recv_cb callback.
+	   */
+	UV_UDP_MMSG_CHUNK = 8 ,
+	/*
+	   * Indicates that recvmmsg should be used, if available.
+	   */
+	UV_UDP_RECVMMSG = 256 
 };
 alias uv_udp_send_cb = ExternC!(void function(uv_udp_send_t* req, int status));
 alias uv_udp_recv_cb = ExternC!(void function(uv_udp_t* handle, ssize_t nread, inout(uv_buf_t)* buf, inout(sockaddr)* addr, uint flags));
@@ -471,8 +487,11 @@ int uv_udp_init(uv_loop_t*, uv_udp_t* handle);
 int uv_udp_init_ex(uv_loop_t*, uv_udp_t* handle, uint flags);
 int uv_udp_open(uv_udp_t* handle, uv_os_sock_t sock);
 int uv_udp_bind(uv_udp_t* handle, inout(sockaddr)* addr, uint flags);
+int uv_udp_connect(uv_udp_t* handle, inout(sockaddr)* addr);
+int uv_udp_getpeername(inout(uv_udp_t)* handle, sockaddr* name, int* namelen);
 int uv_udp_getsockname(inout(uv_udp_t)* handle, sockaddr* name, int* namelen);
 int uv_udp_set_membership(uv_udp_t* handle, inout(char)* multicast_addr, inout(char)* interface_addr, uv_membership membership);
+int uv_udp_set_source_membership(uv_udp_t* handle, inout(char)* multicast_addr, inout(char)* interface_addr, inout(char)* source_addr, uv_membership membership);
 int uv_udp_set_multicast_loop(uv_udp_t* handle, int on);
 int uv_udp_set_multicast_ttl(uv_udp_t* handle, int ttl);
 int uv_udp_set_multicast_interface(uv_udp_t* handle, inout(char)* interface_addr);
@@ -502,10 +521,23 @@ enum uv_tty_mode_t {
 	/* Binary-safe I/O mode for IPC (Unix-only) */
 	UV_TTY_MODE_IO
 };
+enum uv_tty_vtermstate_t {
+	/*
+	   * The console supports handling of virtual terminal sequences
+	   * (Windows10 new console, ConEmu)
+	   */
+	UV_TTY_SUPPORTED,
+	/* The console cannot process the virtual terminal sequence.  (Legacy
+	   * console)
+	   */
+	UV_TTY_UNSUPPORTED
+};
 int uv_tty_init(uv_loop_t*, uv_tty_t*, uv_file fd, int readable);
 int uv_tty_set_mode(uv_tty_t*, uv_tty_mode_t mode);
 int uv_tty_reset_mode();
 int uv_tty_get_winsize(uv_tty_t*, int* width, int* height);
+void uv_tty_set_vterm_state(uv_tty_vtermstate_t state);
+int uv_tty_get_vterm_state(uv_tty_vtermstate_t* state);
 uv_handle_type uv_guess_handle(uv_file file);
 /*
  * uv_pipe_t is a subclass of uv_stream_t.
@@ -764,10 +796,15 @@ int uv_queue_work(uv_loop_t* loop, uv_work_t* req, uv_work_cb work_cb, uv_after_
 int uv_cancel(uv_req_t* req);
 struct uv_cpu_times_s {
 	uint64_t user;
+	/* milliseconds */
 	uint64_t nice;
+	/* milliseconds */
 	uint64_t sys;
+	/* milliseconds */
 	uint64_t idle;
+	/* milliseconds */
 	uint64_t irq;
+	/* milliseconds */
 };
 struct uv_cpu_info_s {
 	char* model;
@@ -799,11 +836,21 @@ struct uv_passwd_s {
 struct uv_utsname_s {
 	char[256] sysname;
 	char[256] release;
-	char[256] _version;
+	char[256] version_;
 	char[256] machine;
 	/* This struct does not contain the nodename and domainname fields present in
 	     the utsname type. domainname is a GNU extension. Both fields are referred
 	     to as meaningless in the docs. */
+};
+struct uv_statfs_s {
+	uint64_t f_type;
+	uint64_t f_bsize;
+	uint64_t f_blocks;
+	uint64_t f_bfree;
+	uint64_t f_bavail;
+	uint64_t f_files;
+	uint64_t f_ffree;
+	uint64_t[4] f_spare;
 };
 enum uv_dirent_type_t {
 	UV_DIRENT_UNKNOWN,
@@ -829,6 +876,10 @@ int uv_open_osfhandle(uv_os_fd_t os_fd);
 struct uv_timeval_t {
 	ptrdiff_t tv_sec;
 	ptrdiff_t tv_usec;
+};
+struct uv_timeval64_t {
+	int64_t tv_sec;
+	int32_t tv_usec;
 };
 struct uv_rusage_t {
 	uv_timeval_t ru_utime;
@@ -871,27 +922,43 @@ int uv_os_get_passwd(uv_passwd_t* pwd);
 void uv_os_free_passwd(uv_passwd_t* pwd);
 uv_pid_t uv_os_getpid();
 uv_pid_t uv_os_getppid();
-enum UV_PRIORITY_LOW = 19 ;
-enum UV_PRIORITY_BELOW_NORMAL = 10 ;
-enum UV_PRIORITY_NORMAL = 0 ;
-enum UV_PRIORITY_ABOVE_NORMAL = -7 ;
-enum UV_PRIORITY_HIGH = -14 ;
-enum UV_PRIORITY_HIGHEST = -20 ;
+static if( isOS400 ) {
+	/* On IBM i PASE, the highest process priority is -10 */
+	enum UV_PRIORITY_LOW = 39 ;
+	// RUNPTY(99)
+	enum UV_PRIORITY_BELOW_NORMAL = 15 ;
+	// RUNPTY(50)
+	enum UV_PRIORITY_NORMAL = 0 ;
+	// RUNPTY(20)
+	enum UV_PRIORITY_ABOVE_NORMAL = -4 ;
+	// RUNTY(12)
+	enum UV_PRIORITY_HIGH = -7 ;
+	// RUNPTY(6)
+	enum UV_PRIORITY_HIGHEST = -10 ;
+	// RUNPTY(1)
+} else {
+	enum UV_PRIORITY_LOW = 19 ;
+	enum UV_PRIORITY_BELOW_NORMAL = 10 ;
+	enum UV_PRIORITY_NORMAL = 0 ;
+	enum UV_PRIORITY_ABOVE_NORMAL = -7 ;
+	enum UV_PRIORITY_HIGH = -14 ;
+	enum UV_PRIORITY_HIGHEST = -20 ;
+}
 int uv_os_getpriority(uv_pid_t pid, int* priority);
 int uv_os_setpriority(uv_pid_t pid, int priority);
 int uv_cpu_info(uv_cpu_info_t** cpu_infos, int* count);
 void uv_free_cpu_info(uv_cpu_info_t* cpu_infos, int count);
 int uv_interface_addresses(uv_interface_address_t** addresses, int* count);
 void uv_free_interface_addresses(uv_interface_address_t* addresses, int count);
+struct uv_env_item_s {
+	char* name;
+	char* value;
+};
+int uv_os_environ(uv_env_item_t** envitems, int* count);
+void uv_os_free_environ(uv_env_item_t* envitems, int count);
 int uv_os_getenv(inout(char)* name, char* buffer, size_t* size);
 int uv_os_setenv(inout(char)* name, inout(char)* value);
 int uv_os_unsetenv(inout(char)* name);
-/*
-    Fallback for the maximum hostname size, including the null terminator. The
-    Windows gethostname() documentation states that 256 bytes will always be
-    large enough to hold the null-terminated hostname.
- */
-enum UV_MAXHOSTNAMESIZE = 256 ;
 int uv_os_gethostname(char* buffer, size_t* size);
 int uv_os_uname(uv_utsname_t* buffer);
 enum uv_fs_type {
@@ -926,7 +993,19 @@ enum uv_fs_type {
 	UV_FS_FCHOWN,
 	UV_FS_REALPATH,
 	UV_FS_COPYFILE,
-	UV_FS_LCHOWN
+	UV_FS_LCHOWN,
+	UV_FS_OPENDIR,
+	UV_FS_READDIR,
+	UV_FS_CLOSEDIR,
+	UV_FS_STATFS,
+	UV_FS_MKSTEMP,
+	UV_FS_LUTIME
+};
+struct uv_dir_s {
+	uv_dirent_t* dirents;
+	size_t nentries;
+	void*[4] reserved;
+	mixin UV_DIR_PRIVATE_FIELDS;
 };
 /* uv_fs_t is a subclass of uv_req_t. */
 struct uv_fs_s {
@@ -943,6 +1022,7 @@ struct uv_fs_s {
 };
 uv_fs_type uv_fs_get_type(inout(uv_fs_t)*);
 ssize_t uv_fs_get_result(inout(uv_fs_t)*);
+int uv_fs_get_system_error(inout(uv_fs_t)*);
 void* uv_fs_get_ptr(inout(uv_fs_t)*);
 const(char)* uv_fs_get_path(inout(uv_fs_t)*);
 uv_stat_t* uv_fs_get_statbuf(uv_fs_t*);
@@ -970,9 +1050,13 @@ enum UV_FS_COPYFILE_FICLONE_FORCE = 0x0004 ;
 int uv_fs_copyfile(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, inout(char)* new_path, int flags, uv_fs_cb cb);
 int uv_fs_mkdir(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int mode, uv_fs_cb cb);
 int uv_fs_mkdtemp(uv_loop_t* loop, uv_fs_t* req, inout(char)* tpl, uv_fs_cb cb);
+int uv_fs_mkstemp(uv_loop_t* loop, uv_fs_t* req, inout(char)* tpl, uv_fs_cb cb);
 int uv_fs_rmdir(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
 int uv_fs_scandir(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int flags, uv_fs_cb cb);
 int uv_fs_scandir_next(uv_fs_t* req, uv_dirent_t* ent);
+int uv_fs_opendir(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
+int uv_fs_readdir(uv_loop_t* loop, uv_fs_t* req, uv_dir_t* dir, uv_fs_cb cb);
+int uv_fs_closedir(uv_loop_t* loop, uv_fs_t* req, uv_dir_t* dir, uv_fs_cb cb);
 int uv_fs_stat(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
 int uv_fs_fstat(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_fs_cb cb);
 int uv_fs_rename(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, inout(char)* new_path, uv_fs_cb cb);
@@ -984,6 +1068,7 @@ int uv_fs_access(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int mode, uv_
 int uv_fs_chmod(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, int mode, uv_fs_cb cb);
 int uv_fs_utime(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, double atime, double mtime, uv_fs_cb cb);
 int uv_fs_futime(uv_loop_t* loop, uv_fs_t* req, uv_file file, double atime, double mtime, uv_fs_cb cb);
+int uv_fs_lutime(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, double atime, double mtime, uv_fs_cb cb);
 int uv_fs_lstat(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
 int uv_fs_link(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, inout(char)* new_path, uv_fs_cb cb);
 /*
@@ -1003,6 +1088,7 @@ int uv_fs_fchmod(uv_loop_t* loop, uv_fs_t* req, uv_file file, int mode, uv_fs_cb
 int uv_fs_chown(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_uid_t uid, uv_gid_t gid, uv_fs_cb cb);
 int uv_fs_fchown(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_uid_t uid, uv_gid_t gid, uv_fs_cb cb);
 int uv_fs_lchown(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_uid_t uid, uv_gid_t gid, uv_fs_cb cb);
+int uv_fs_statfs(uv_loop_t* loop, uv_fs_t* req, inout(char)* path, uv_fs_cb cb);
 enum uv_fs_event {
 	UV_RENAME = 1 ,
 	UV_CHANGE = 2 
@@ -1073,6 +1159,18 @@ int uv_ip4_name(inout(sockaddr_in)* src, char* dst, size_t size);
 int uv_ip6_name(inout(sockaddr_in6)* src, char* dst, size_t size);
 int uv_inet_ntop(int af, inout(void)* src, char* dst, size_t size);
 int uv_inet_pton(int af, inout(char)* src, void* dst);
+struct uv_random_s {
+	mixin UV_REQ_FIELDS;
+	/* read-only */
+	uv_loop_t* loop;
+	/* private */
+	int status;
+	void* buf;
+	size_t buflen;
+	uv_random_cb cb;
+	uv__work work_req;
+};
+int uv_random(uv_loop_t* loop, uv_random_t* req, void* buf, size_t buflen, uint flags, uv_random_cb cb);
 int uv_if_indextoname(uint ifindex, char* buffer, size_t* size);
 int uv_if_indextoiid(uint ifindex, char* buffer, size_t* size);
 int uv_exepath(char* buffer, size_t* size);
@@ -1080,7 +1178,9 @@ int uv_cwd(char* buffer, size_t* size);
 int uv_chdir(inout(char)* dir);
 uint64_t uv_get_free_memory();
 uint64_t uv_get_total_memory();
+uint64_t uv_get_constrained_memory();
 uint64_t uv_hrtime();
+void uv_sleep(uint msec);
 void uv_disable_stdio_inheritance();
 int uv_dlopen(inout(char)* filename, uv_lib_t* lib);
 void uv_dlclose(uv_lib_t* lib);
@@ -1119,6 +1219,7 @@ int uv_key_create(uv_key_t* key);
 void uv_key_delete(uv_key_t* key);
 void* uv_key_get(uv_key_t* key);
 void uv_key_set(uv_key_t* key, void* value);
+int uv_gettimeofday(uv_timeval64_t* tv);
 alias uv_thread_cb = ExternC!(void function(void* arg));
 int uv_thread_create(uv_thread_t* tid, uv_thread_cb entry, void* arg);
 enum uv_thread_create_flags {
@@ -1164,6 +1265,7 @@ union uv_any_req {
 	uv_work_t work ;
 	uv_getaddrinfo_t getaddrinfo ;
 	uv_getnameinfo_t getnameinfo ;
+	uv_random_t random ;
 };
 struct uv_loop_s {
 	/* User data - use this for whatever. */

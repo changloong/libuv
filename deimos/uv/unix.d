@@ -52,6 +52,7 @@ static if( isLinuxOS ) {
 	package import deimos.uv.os390; /* include(uv/os390.h); */ 
 } else static if( isOS400 ) {
 	package import deimos.uv.posix; /* include(uv/posix.h); */ 
+	/* IBM i needs uv/posix.h, not uv/aix.h */
 } else static if( isAixOS ) {
 	package import deimos.uv.aix; /* include(uv/aix.h); */ 
 } else static if( isSunOS ) {
@@ -62,8 +63,9 @@ static if( isLinuxOS ) {
 	package import deimos.uv.bsd; /* include(uv/bsd.h); */ 
 } else static if( isCygWin ) {
 	package import deimos.uv.posix; /* include(uv/posix.h); */ 
+} else static if( isHaiKuOS ) {
+	package import deimos.uv.posix; /* include(uv/posix.h); */ 
 }
-enum NI_MAXHOST = 1025;
 enum NI_MAXSERV = 32;
 static if( isLinuxOS  || isAixOS || isSunOS ) {
 	template UV_IO_PRIVATE_PLATFORM_FIELDS() {};
@@ -102,7 +104,7 @@ alias uv_pid_t = pid_t ;
 alias uv_once_t = pthread_once_t ;
 alias uv_thread_t = pthread_t ;
 alias uv_mutex_t = pthread_mutex_t ;
-alias uv_rwlock_t = pthread_rwlock_t ;
+alias uv_rwlock_t = pthread_rwlock_t_ ;
 alias uv_sem_t = UV_PLATFORM_SEM_T ;
 alias uv_cond_t = pthread_cond_t ;
 alias uv_key_t = pthread_key_t ;
@@ -130,6 +132,9 @@ alias uv_barrier_t = pthread_barrier_t ;
 alias uv_gid_t = gid_t ;
 alias uv_uid_t = uid_t ;
 alias uv__dirent_t = dirent ;
+template UV_DIR_PRIVATE_FIELDS() {
+	DIR* dir;
+}
 static if( isDtUnknow ) {
 	template HAVE_DIRENT_TYPES() {};
 	enum UV__DT_FILE = -1 ;
@@ -318,24 +323,8 @@ template UV_FS_EVENT_PRIVATE_FIELDS() {
 	mixin UV_PLATFORM_FS_EVENT_FIELDS;
 }
 /* fs open() flags supported on this platform: */
-enum UV_FS_O_APPEND = 0 ;
-enum UV_FS_O_CREAT = 0 ;
-enum UV_FS_O_DIRECT = 0 ;
-enum UV_FS_O_DIRECTORY = 0 ;
-enum UV_FS_O_DSYNC = 0 ;
-enum UV_FS_O_EXCL = 0 ;
-enum UV_FS_O_EXLOCK = 0 ;
-enum UV_FS_O_NOATIME = 0 ;
-enum UV_FS_O_NOCTTY = 0 ;
-enum UV_FS_O_NOFOLLOW = 0 ;
-enum UV_FS_O_NONBLOCK = 0 ;
-enum UV_FS_O_RDONLY = 0 ;
-enum UV_FS_O_RDWR = 0 ;
-enum UV_FS_O_SYMLINK = 0 ;
-enum UV_FS_O_SYNC = 0 ;
-enum UV_FS_O_TRUNC = 0 ;
-enum UV_FS_O_WRONLY = 0 ;
 /* fs open() flags supported on other platforms: */
+enum UV_FS_O_FILEMAP = 0 ;
 enum UV_FS_O_RANDOM = 0 ;
 enum UV_FS_O_SHORT_LIVED = 0 ;
 enum UV_FS_O_SEQUENTIAL = 0 ;
