@@ -2,6 +2,22 @@ module deimos.uv._d;
 
 package import core.stdc.stdint;
 
+version (OSX)
+    version = Darwin;
+else version (iOS)
+    version = Darwin;
+else version (TVOS)
+    version = Darwin;
+else version (WatchOS)
+    version = Darwin;
+
+
+version(CRuntime_Musl) {
+	enum isMUSL     = true;
+} else {
+	enum isMUSL	= false;
+}
+
 version(Posix) {
 	private import core.sys.posix.config;
 	public import core.sys.posix.netdb : addrinfo, sockaddr, sockaddr_storage, sockaddr_in, sockaddr_in6;
@@ -28,11 +44,14 @@ version(Posix) {
         		cc_t[NCCS] 	c_cc;
         		speed_t __c_ispeed;
         		speed_t __c_ospeed;
-		};
+		}
+		enum NI_MAXHOST = 255;
 	} else {
 		package import core.sys.posix.net.if_ : IF_NAMESIZE ;
-		const UV_IF_NAMESIZE = IF_NAMESIZE + 1 ;
+		const UV_IF_NAMESIZE = IF_NAMESIZE + 1;
+		enum NI_MAXHOST = 1025;
 	}
+	package(deimos.uv) struct DIR;
 } else {
 	const UV_IF_NAMESIZE = 16 + 1 ;
 }
@@ -92,29 +111,20 @@ version(Windows) {
 	enum isMSVC2008 	= false ;
 }
 
-enum isCygWin = false ;
+enum isCygWin	= false ;
 enum isMSYS	= false ;
 
 version(linux) {
 	enum isLinuxOS	= true ;
-	version (X86) {
-		// @fixme druntime pthread_rwlock_t size is (36, 64), linux is (32, 56)
-		struct pthread_rwlock_t {
-			byte[32] __size;
-		}
-	} else {
-		struct pthread_rwlock_t {
-			byte[56] __size;
-		}
-	}
 } else {
 	enum isLinuxOS	= false ;
+	alias pthread_rwlock_t_ = pthread_rwlock_t;
 }
 
-version(OSX) {
+version(Darwin) {
 	enum isMacOS	= true ;
 	enum hasPTHREAD_BARRIER = false ;
-	package import core.sys.osx.mach.semaphore;
+	package import core.sys.darwin.mach.semaphore;
 	struct pthread_barrier_t {
 		void* data;
 	}
@@ -161,13 +171,39 @@ version(Android) {
 		speed_t    c_ispeed;
 		speed_t    c_ospeed;
 	}
+	struct pthread_barrier_t {
+	 	version(D_LP64 ) {
+	  	  int64_t[4] __private;
+		} else {
+	  	  int32_t[8] __private;
+		}
+	} ;
 } else {
 	enum isAndroidOS	= false ;
 }
 
 enum isOS390 = false ;
 enum isOS400 = false ;
+enum isHaiKuOS = false;
 
+static if( isLinuxOS ) {
+        // @fixme druntime pthread_rwlock_t size is (36, 64), linux is (32, 56)
+        version(D_LP64) {
+                struct pthread_rwlock_t_ {
+                        byte[56] __size;
+                }
+        } else {
+                static if(isAndroidOS) {
+                        struct pthread_rwlock_t_ {
+                                byte[40] __size;
+                        }
+                } else /* static if (isMUSL) */ {
+                        struct pthread_rwlock_t_ {
+                                byte[32] __size;
+                        }
+                } 
+        }
+}
 
 package:
 
@@ -193,7 +229,7 @@ struct RB_HEAD(T) {
 template ExternC(T) if (is(typeof(*(T.init)) P == function)) {
 	static if (is(typeof(*(T.init)) R == return)) {
 		static if (is(typeof(*(T.init)) P == function)) {
-			alias ExternC = extern(C) R function(P) ;
+			alias ExternC = extern(C) R function(P) @nogc nothrow ;
 		}
 	}
 }
@@ -201,7 +237,7 @@ template ExternC(T) if (is(typeof(*(T.init)) P == function)) {
 template ExternWindows(T) if (is(typeof(*(T.init)) P == function)) {
 	static if (is(typeof(*(T.init)) R == return)) {
 		static if (is(typeof(*(T.init)) P == function)) {
-			alias ExternWindows = extern(Windows) R function(P) ;
+			alias ExternWindows = extern(Windows) R function(P) @nogc nothrow ;
 		}
 	}
 }
