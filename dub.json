@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "library",
+            "targetType": "sourceLibrary"
+        }
+    ],
+    "description": "Deimos bindings for libuv, a cross-platform asynchronous I/O library",
+    "homepage": "http://libuv.org/",
+    "importPaths": [
+        "."
+    ],
+    "libs-posix": [
+        "uv"
+    ],
+    "libs-windows": [
+        "uv", "iphlpapi", "userenv", "psapi", "Ws2_32"
+    ],
+    "dflags-windows": ["-inline", "-O", "-release", "-betterC"],
+    "license": "BSD 3-clause",
+    "name": "libuv",
+    "targetType": "sourceLibrary",
+    "version": "1.25.0"
+}
