@@ -118,7 +118,7 @@ version(linux) {
 	enum isLinuxOS	= true ;
 } else {
 	enum isLinuxOS	= false ;
-	alias pthread_rwlock_t_ = pthread_rwlock_t;
+	version(Posix) alias pthread_rwlock_t_ = pthread_rwlock_t;
 }
 
 version(Darwin) {
