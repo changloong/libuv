@@ -199,7 +199,8 @@ alias uv_passwd_t = uv_passwd_s ;
 alias uv_utsname_t = uv_utsname_s ;
 alias uv_statfs_t = uv_statfs_s ;
 enum uv_loop_option {
-	UV_LOOP_BLOCK_SIGNAL
+	UV_LOOP_BLOCK_SIGNAL = 0 ,
+	UV_METRICS_IDLE_TIME
 };
 enum uv_run_mode {
 	UV_RUN_DEFAULT = 0 ,
@@ -500,6 +501,7 @@ int uv_udp_set_ttl(uv_udp_t* handle, int ttl);
 int uv_udp_send(uv_udp_send_t* req, uv_udp_t* handle, inout(uv_buf_t)* bufs, uint nbufs, inout(sockaddr)* addr, uv_udp_send_cb send_cb);
 int uv_udp_try_send(uv_udp_t* handle, inout(uv_buf_t)* bufs, uint nbufs, inout(sockaddr)* addr);
 int uv_udp_recv_start(uv_udp_t* handle, uv_alloc_cb alloc_cb, uv_udp_recv_cb recv_cb);
+int uv_udp_using_recvmmsg(inout(uv_udp_t)* handle);
 int uv_udp_recv_stop(uv_udp_t* handle);
 size_t uv_udp_get_send_queue_size(inout(uv_udp_t)* handle);
 size_t uv_udp_get_send_queue_count(inout(uv_udp_t)* handle);
@@ -925,17 +927,11 @@ uv_pid_t uv_os_getppid();
 static if( isOS400 ) {
 	/* On IBM i PASE, the highest process priority is -10 */
 	enum UV_PRIORITY_LOW = 39 ;
-	// RUNPTY(99)
 	enum UV_PRIORITY_BELOW_NORMAL = 15 ;
-	// RUNPTY(50)
 	enum UV_PRIORITY_NORMAL = 0 ;
-	// RUNPTY(20)
 	enum UV_PRIORITY_ABOVE_NORMAL = -4 ;
-	// RUNTY(12)
 	enum UV_PRIORITY_HIGH = -7 ;
-	// RUNPTY(6)
 	enum UV_PRIORITY_HIGHEST = -10 ;
-	// RUNPTY(1)
 } else {
 	enum UV_PRIORITY_LOW = 19 ;
 	enum UV_PRIORITY_BELOW_NORMAL = 10 ;
@@ -961,6 +957,7 @@ int uv_os_setenv(inout(char)* name, inout(char)* value);
 int uv_os_unsetenv(inout(char)* name);
 int uv_os_gethostname(char* buffer, size_t* size);
 int uv_os_uname(uv_utsname_t* buffer);
+uint64_t uv_metrics_idle_time(uv_loop_t* loop);
 enum uv_fs_type {
 	UV_FS_UNKNOWN = - 1,
 	UV_FS_CUSTOM,
@@ -1274,10 +1271,12 @@ struct uv_loop_s {
 	uint active_handles;
 	void*[2] handle_queue;
 	union active_reqs_s {
-		void*[2] unused;
+		void* unused;
 		uint count;
 	};
 	active_reqs_s active_reqs;
+	/* Internal storage for future extensions. */
+	void* internal_fields;
 	/* Internal flag to signal loop stop. */
 	uint stop_flag;
 	mixin UV_LOOP_PRIVATE_FIELDS;

@@ -1,7 +1,7 @@
 
 # libuv D interface
 
-- Library version: v1.38.0
+- Library version: v1.39.0
 - Works with -betterC
 
 ## An example based on github.com/trevnorris/libuv-examples/simple-thread.c
