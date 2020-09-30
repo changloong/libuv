@@ -265,8 +265,8 @@ alias uv_getaddrinfo_cb = ExternC!(void function(uv_getaddrinfo_t* req, int stat
 alias uv_getnameinfo_cb = ExternC!(void function(uv_getnameinfo_t* req, int status, inout(char)* hostname, inout(char)* service));
 alias uv_random_cb = ExternC!(void function(uv_random_t* req, int status, void* buf, size_t buflen));
 struct uv_timespec_t {
-	ptrdiff_t tv_sec;
-	ptrdiff_t tv_nsec;
+	c_long tv_sec;
+	c_long tv_nsec;
 };
 struct uv_stat_t {
 	uint64_t st_dev;
@@ -456,6 +456,12 @@ enum uv_udp_flags {
 	   */
 	UV_UDP_MMSG_CHUNK = 8 ,
 	/*
+	   * Indicates that the buffer provided has been fully utilized by recvmmsg and
+	   * that it should now be freed by the recv_cb callback. When this flag is set
+	   * in uv_udp_recv_cb, nread will always be 0 and addr will always be NULL.
+	   */
+	UV_UDP_MMSG_FREE = 16 ,
+	/*
 	   * Indicates that recvmmsg should be used, if available.
 	   */
 	UV_UDP_RECVMMSG = 256 
@@ -621,6 +627,7 @@ int uv_timer_stop(uv_timer_t* handle);
 int uv_timer_again(uv_timer_t* handle);
 void uv_timer_set_repeat(uv_timer_t* handle, uint64_t repeat);
 uint64_t uv_timer_get_repeat(inout(uv_timer_t)* handle);
+uint64_t uv_timer_get_due_in(inout(uv_timer_t)* handle);
 /*
  * uv_getaddrinfo_t is a subclass of uv_req_t.
  *
@@ -830,8 +837,8 @@ struct uv_interface_address_s {
 };
 struct uv_passwd_s {
 	char* username;
-	ptrdiff_t uid;
-	ptrdiff_t gid;
+	c_long uid;
+	c_long gid;
 	char* shell;
 	char* homedir;
 };
@@ -876,8 +883,8 @@ int uv_uptime(double* uptime);
 uv_os_fd_t uv_get_osfhandle(int fd);
 int uv_open_osfhandle(uv_os_fd_t os_fd);
 struct uv_timeval_t {
-	ptrdiff_t tv_sec;
-	ptrdiff_t tv_usec;
+	c_long tv_sec;
+	c_long tv_usec;
 };
 struct uv_timeval64_t {
 	int64_t tv_sec;

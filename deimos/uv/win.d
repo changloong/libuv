@@ -544,7 +544,7 @@ template UV_FS_EVENT_PRIVATE_FIELDS() {
 template UV_SIGNAL_PRIVATE_FIELDS() {
 	RB_ENTRY!(uv_signal_s) tree_entry;
 	uv_req_s signal_req;
-	size_t pending_signum;
+	c_ulong pending_signum;
 }
 enum F_OK = 0;
 enum R_OK = 4;

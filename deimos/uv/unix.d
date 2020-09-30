@@ -65,6 +65,8 @@ static if( isLinuxOS ) {
 	package import deimos.uv.posix; /* include(uv/posix.h); */ 
 } else static if( isHaiKuOS ) {
 	package import deimos.uv.posix; /* include(uv/posix.h); */ 
+} else static if( isQNX ) {
+	package import deimos.uv.posix; /* include(uv/posix.h); */ 
 }
 enum NI_MAXSERV = 32;
 static if( isLinuxOS  || isAixOS || isSunOS ) {
@@ -151,7 +153,7 @@ struct uv_lib_t {
 	char* errmsg;
 };
 template UV_LOOP_PRIVATE_FIELDS() {
-	size_t flags;
+	c_ulong flags;
 	int backend_fd;
 	void*[2] pending_queue;
 	void*[2] watcher_queue;

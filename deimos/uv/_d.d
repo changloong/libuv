@@ -1,6 +1,7 @@
 module deimos.uv._d;
 
 package import core.stdc.stdint;
+public import core.stdc.config;
 
 version (OSX)
     version = Darwin;
@@ -185,6 +186,7 @@ version(Android) {
 enum isOS390 = false ;
 enum isOS400 = false ;
 enum isHaiKuOS = false;
+enum isQNX = false;
 
 static if( isLinuxOS ) {
         // @fixme druntime pthread_rwlock_t size is (36, 64), linux is (32, 56)
